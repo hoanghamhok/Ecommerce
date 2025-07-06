@@ -28,7 +28,7 @@ export default function CartPage() {
     const [promoCode, setPromoCode] = useState('');
     const [discount, setDiscount] = useState(0);
     const [showSuccess, setShowSuccess] = useState<{ visible: boolean; orderId?: string }>({ visible: false });
-
+    const [paymentMethod, setPaymentMethod] = useState("cod");
 
     // Hàm lấy danh sách sản phẩm trong giỏ hàng
     useEffect(() => {
@@ -111,13 +111,41 @@ export default function CartPage() {
 
     const handleCheckout = async () => {
         setIsCheckingOut(true);
-        
+
         try {
-            const res = await fetch('http://localhost:5091/api/Cart/checkout', {
-                method: 'POST',
+            const token = localStorage.getItem("token");
+
+            if (paymentMethod === "momo") {
+            const response = await fetch("https://localhost:5091/api/cart/checkout-momo", {
+                method: "POST",
                 headers: {
-                    'Authorization': `Bearer ${localStorage.getItem("token")}`,
-                    'Content-Type': 'application/json'
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`
+                },
+                body: JSON.stringify({ items: cartItems, total })
+            });
+
+            if (!response.ok) {
+                throw new Error("Thanh toán MoMo thất bại");
+            }
+
+            const data = await response.json();
+
+            // Nếu server trả về url từ MoMo
+            if (data.url) {
+                window.location.href = data.url;
+                return;
+            }
+
+            setShowSuccess({ visible: true, orderId: data.orderId });
+            }
+
+            else if (paymentMethod === "cod") {
+            const res = await fetch("http://localhost:5091/api/Cart/checkout", {
+                method: "POST",
+                headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json"
                 }
             });
 
@@ -133,18 +161,23 @@ export default function CartPage() {
             if (!res.ok) {
                 throw new Error(data.message || "Lỗi không xác định");
             }
-            if (res.ok) {
-                setShowSuccess({ visible: true, orderId: data.orderId });
-                setCartItems([]);
-                setTotal(0);
-                setTimeout(() => setShowSuccess({ visible: false }), 5000); // Tự động ẩn sau 5s
-            }       
+
+            setShowSuccess({ visible: true, orderId: data.orderId });
+            setCartItems([]);
+            setTotal(0);
+            setTimeout(() => setShowSuccess({ visible: false }), 5000);
+            }
+
+            else {
+            alert("Vui lòng chọn phương thức thanh toán");
+            }
         } catch (error: any) {
+            console.error("Checkout Error:", error);
             alert("Lỗi khi thanh toán: " + error.message);
         } finally {
             setIsCheckingOut(false);
         }
-    };
+        };
 
     // Loading State
     if (loading) {
@@ -382,6 +415,36 @@ export default function CartPage() {
                                     </div>
                                 )}
                             </div>
+                            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                                {/* Payment Method */}
+                            <h3 className="text-lg font-semibold text-slate-900 mb-4">Phương thức thanh toán</h3>
+                            <div className="space-y-3">
+                                <label className="flex items-center space-x-3">
+                                <input
+                                    type="radio"
+                                    name="payment"
+                                    value="cod"
+                                    checked={paymentMethod === "cod"}
+                                    onChange={(e) => setPaymentMethod(e.target.value)}
+                                    className="form-radio h-5 w-5 text-emerald-600"
+                                />
+                                <span className="text-slate-700">Thanh toán khi nhận hàng (COD)</span>
+                                </label>
+
+                                <label className="flex items-center space-x-3">
+                                <input
+                                    type="radio"
+                                    name="payment"
+                                    value="momo"
+                                    checked={paymentMethod === "momo"}
+                                    onChange={(e) => setPaymentMethod(e.target.value)}
+                                    className="form-radio h-5 w-5 text-emerald-600"
+                                />
+                                <span className="text-slate-700">Thanh toán qua Ví MoMo</span>
+                                </label>
+                            </div>
+                            </div>
+
 
                             {/* Order Summary */}
                             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">

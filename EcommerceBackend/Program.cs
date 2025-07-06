@@ -109,6 +109,9 @@ builder.Services.AddSwaggerGen(c =>
 });
 //Add Review Service
 builder.Services.AddScoped<IReviewService, ReviewService>();
+// Add Mail Service
+builder.Services.AddScoped<EmailService>();
+builder.Services.AddScoped<MomoPaymentService>();
 var app = builder.Build();
 
 // Use static files
