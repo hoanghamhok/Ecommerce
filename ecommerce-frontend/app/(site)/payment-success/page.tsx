@@ -1,5 +1,6 @@
+'use client';
 import { useEffect, useState } from "react";
-import { useRouter } from "next/router";
+import { useRouter,useSearchParams } from "next/navigation";
 
 type OrderItem = {
   productId: number;
@@ -20,38 +21,39 @@ type Order = {
 };
 
 export default function PaymentSuccess() {
+  const searchParams = useSearchParams();
   const router = useRouter();
-  const { orderId } = router.query;
+  const orderId = searchParams.get("orderId");
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (orderId) {
-      const token = localStorage.getItem("token"); // token bạn lưu sau khi đăng nhập
-      if (!token) {
-        alert("Chưa đăng nhập.");
-        return;
-      }
-
-      fetch(`https://localhost:5091/api/order/${orderId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-        .then(res => {
-          if (!res.ok) throw new Error("Không tìm thấy đơn hàng");
-          return res.json();
-        })
-        .then(data => {
-          setOrder(data);
-          setLoading(false);
-        })
-        .catch(() => {
-          setOrder(null);
-          setLoading(false);
-        });
+  if (orderId) {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("Chưa đăng nhập.");
+      return;
     }
-  }, [orderId]);
+
+    fetch(`https://localhost:5091/api/order/${orderId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Không tìm thấy đơn hàng");
+        return res.json();
+      })
+      .then((data) => {
+        setOrder(data);
+        setLoading(false);
+      })
+      .catch(() => {
+        setOrder(null);
+        setLoading(false);
+      });
+  }
+}, [orderId]);
 
   if (loading) return <p>⏳ Đang tải đơn hàng...</p>;
   if (!order) return <p>❌ Không tìm thấy đơn hàng hoặc lỗi khi tải dữ liệu.</p>;

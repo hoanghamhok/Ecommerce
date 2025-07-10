@@ -109,6 +109,25 @@ namespace Controllers
             await _context.SaveChangesAsync();
             return Ok(new { message = "Cập nhật số lượng thành công." });
         }
+        //Xóa sản phẩm khỏi giỏ hàng
+        [HttpDelete("remove/{productId}")]
+        [Authorize]
+        public async Task<IActionResult> RemoveFromCart(int productId)
+        {
+            var userId = GetUserIdFromToken();
+            if (userId == null)
+                return Unauthorized("Không tìm thấy người dùng.");
+
+            var cartItem = await _context.Carts.FirstOrDefaultAsync(
+                c => c.UserId == userId && c.ProductId == productId);
+            if (cartItem == null)
+                return NotFound("Không tìm thấy sản phẩm trong giỏ hàng.");
+
+            _context.Carts.Remove(cartItem);
+            await _context.SaveChangesAsync();
+            return Ok(new { message = "Xóa sản phẩm khỏi giỏ hàng thành công." });
+        }
+        //Thanh toán COD
         [HttpPost("checkout")]
         [Authorize]
         public async Task<IActionResult> Checkout()
@@ -164,7 +183,7 @@ namespace Controllers
             }
             return Ok(new { message = "Thanh toán thành công", orderId = order.OrderId });
         }
-
+        //Thanh toán bằng MoMo
         [HttpPost("checkout-momo")]
         [Authorize]
         public async Task<IActionResult> PayWithMomo([FromServices] MomoPaymentService momoService)
@@ -249,6 +268,21 @@ namespace Controllers
             }
 
             return Redirect($"http://localhost:3000/payment-success?orderId={order.OrderId}");
+        }
+        [HttpPost("momo-notify")]
+        public async Task<IActionResult> MomoNotify([FromBody] MomoNotifyModel notify)
+        {
+            if (notify.ResultCode == 0)
+            {
+                var order = await _context.Orders.FindAsync(notify.OrderId);
+                if (order != null)
+                {
+                    order.Status = "Paid";
+                    await _context.SaveChangesAsync();
+                }
+            }
+
+            return Ok(); // MoMo yêu cầu luôn trả 200 OK
         }
         public class CartRequest
         {

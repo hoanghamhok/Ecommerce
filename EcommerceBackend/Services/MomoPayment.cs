@@ -7,45 +7,52 @@ using Models;
 public class MomoPaymentService
 {
     private readonly IConfiguration _config;
-    public MomoPaymentService(IConfiguration config) => _config = config;
 
-    public string CreateSignature(string rawData, string secretKey)
+    public MomoPaymentService(IConfiguration config)
     {
-        using (var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(secretKey)))
-        {
-            byte[] hashValue = hmac.ComputeHash(Encoding.UTF8.GetBytes(rawData));
-            return BitConverter.ToString(hashValue).Replace("-", "").ToLower();
-        }
+        _config = config;
     }
 
     public async Task<string> CreatePaymentUrl(Order order, HttpContext httpContext)
     {
-        string endpoint = "https://test-payment.momo.vn/v2/gateway/api/create";
-
+        var endpoint = "https://test-payment.momo.vn/v2/gateway/api/create";
         var partnerCode = _config["Momo:PartnerCode"];
         var accessKey = _config["Momo:AccessKey"];
         var secretKey = _config["Momo:SecretKey"];
-        var returnUrl = _config["Momo:ReturnUrl"];
-        var notifyUrl = _config["Momo:NotifyUrl"];
+        var redirectUrl = _config["Momo:ReturnUrl"];
+        var ipnUrl = _config["Momo:NotifyUrl"];
 
-        var requestId = Guid.NewGuid().ToString();
-        var orderInfo = $"Thanh toán đơn hàng #{order.OrderId}";
-        var amount = order.TotalAmount.ToString("0");
+        string orderId = Guid.NewGuid().ToString();
+        string requestId = Guid.NewGuid().ToString();
+        string orderInfo = $"Thanh toán đơn hàng #{order.OrderId}";
+        string amount = ((int)order.TotalAmount).ToString();
+        string extraData = ""; // nếu cần truyền gì thêm
 
-        var rawData = $"accessKey={accessKey}&amount={amount}&extraData=&ipnUrl={notifyUrl}&orderId={order.OrderId}&orderInfo={orderInfo}&partnerCode={partnerCode}&redirectUrl={returnUrl}&requestId={requestId}&requestType=captureWallet";
-        var signature = CreateSignature(rawData, secretKey);
+        // Raw string để tạo signature
+        string rawHash = $"accessKey={accessKey}&amount={amount}&extraData={extraData}" +
+                         $"&ipnUrl={ipnUrl}&orderId={orderId}&orderInfo={orderInfo}" +
+                         $"&partnerCode={partnerCode}&redirectUrl={redirectUrl}" +
+                         $"&requestId={requestId}&requestType=captureWallet";
 
-        var body = new
+        // Tạo chữ ký
+        string signature;
+        using (var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(secretKey)))
+        {
+            var hashBytes = hmac.ComputeHash(Encoding.UTF8.GetBytes(rawHash));
+            signature = BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
+        }
+
+        var requestData = new
         {
             partnerCode,
             accessKey,
             requestId,
             amount,
-            orderId = order.OrderId.ToString(),
+            orderId,
             orderInfo,
-            redirectUrl = returnUrl,
-            ipnUrl = notifyUrl,
-            extraData = "",
+            redirectUrl,
+            ipnUrl,
+            extraData,
             requestType = "captureWallet",
             signature,
             lang = "vi"
@@ -53,11 +60,12 @@ public class MomoPaymentService
 
         var client = new HttpClient();
         var response = await client.PostAsync(endpoint,
-            new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json"));
+            new StringContent(JsonConvert.SerializeObject(requestData), Encoding.UTF8, "application/json"));
 
         var responseBody = await response.Content.ReadAsStringAsync();
-        dynamic result = JsonConvert.DeserializeObject(responseBody);
+        dynamic momoResponse = JsonConvert.DeserializeObject(responseBody);
 
-        return result.payUrl;
+        return momoResponse.payUrl;
     }
 }
+

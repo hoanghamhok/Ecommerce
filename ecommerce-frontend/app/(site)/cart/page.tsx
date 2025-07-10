@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from "react";   
-import { fetchCart, updateCartItem } from "../services/api";
+import { fetchCart, updateCartItem,removeCartItem } from "../services/api";
 import { 
   ShoppingCart, 
   Plus, 
@@ -83,11 +83,9 @@ export default function CartPage() {
         setRemovingItems(prev => new Set(prev).add(itemId));
         
         try {
-            // Simulate API call for removing item
-            await new Promise(resolve => setTimeout(resolve, 500));
-            
+            await removeCartItem(productId);      
             setCartItems(prevItems => {
-                const updatedItems = prevItems.filter(item => item.id !== itemId);
+                const updatedItems = prevItems.filter(item => item.cartItemId !== itemId);
                 calculateTotal(updatedItems);
                 return updatedItems;
             });
@@ -116,7 +114,7 @@ export default function CartPage() {
             const token = localStorage.getItem("token");
 
             if (paymentMethod === "momo") {
-            const response = await fetch("https://localhost:5091/api/cart/checkout-momo", {
+            const response = await fetch("http://localhost:5091/api/cart/checkout-momo", {
                 method: "POST",
                 headers: {
                 "Content-Type": "application/json",
@@ -305,7 +303,7 @@ export default function CartPage() {
                                 <div 
                                     key={item.product.id}
                                     className={`bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden transition-all duration-300 ${
-                                        removingItems.has(item.id) ? 'opacity-50 scale-95' : 'hover:shadow-md'
+                                        removingItems.has(item.cartItemId) ? 'opacity-50 scale-95' : 'hover:shadow-md'
                                     }`}
                                     style={{ animationDelay: `${index * 100}ms` }}
                                 >
@@ -319,9 +317,9 @@ export default function CartPage() {
                                                     className="w-24 h-24 object-cover rounded-xl"
                                                 />
                                                 <button
-                                                    onClick={() => handleRemoveItem(item.id, item.productId)}
+                                                    onClick={() => handleRemoveItem(item.cartItemId, item.productId)}
                                                     className="absolute -top-2 -right-2 w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors duration-200 shadow-lg"
-                                                    disabled={removingItems.has(item.id)}
+                                                    disabled={removingItems.has(item.cartItemId)}
                                                 >
                                                     <Trash2 className="w-4 h-4" />
                                                 </button>
@@ -352,9 +350,9 @@ export default function CartPage() {
                                                         {/* Quantity Controls */}
                                                         <div className="flex items-center space-x-2 bg-slate-100 rounded-xl p-1">
                                                             <button
-                                                                onClick={() => handleUpdateQuantity(item.id, item.productId, item.quantity - 1)}
+                                                                onClick={() => handleUpdateQuantity(item.cartItemId, item.productId, item.quantity - 1)}
                                                                 className="w-8 h-8 flex items-center justify-center hover:bg-white rounded-lg transition-colors duration-200"
-                                                                disabled={removingItems.has(item.id)}
+                                                                disabled={removingItems.has(item.cartItemId)}
                                                             >
                                                                 <Minus className="w-4 h-4 text-slate-600" />
                                                             </button>
@@ -362,9 +360,9 @@ export default function CartPage() {
                                                                 {item.quantity}
                                                             </span>
                                                             <button
-                                                                onClick={() => handleUpdateQuantity(item.id, item.productId, item.quantity + 1)}
+                                                                onClick={() => handleUpdateQuantity(item.cartItemId, item.productId, item.quantity + 1)}
                                                                 className="w-8 h-8 flex items-center justify-center hover:bg-white rounded-lg transition-colors duration-200"
-                                                                disabled={removingItems.has(item.id)}
+                                                                disabled={removingItems.has(item.cartItemId)}
                                                             >
                                                                 <Plus className="w-4 h-4 text-slate-600" />
                                                             </button>
