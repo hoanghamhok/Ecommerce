@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Heart, Star, StarHalf } from 'lucide-react';
 import Link from 'next/link';
 import AddToCartButton from './AddToCartButton';
+import dynamic from 'next/dynamic';
 
 function StarRating({ rating }: { rating: number }) {
   const totalStars = 5;
@@ -103,7 +104,7 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
       console.error('Lỗi kết nối:', err);
     }
   };
-
+  const [showFullDescription, setShowFullDescription] = useState(false);
   return (
     <div className="max-w-6xl mx-auto px-4 py-10 space-y-12">
       {/* Breadcrumb */}
@@ -114,27 +115,64 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
       </nav>
 
       {/* Thông tin sản phẩm */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 bg-white rounded-lg shadow-lg p-6">
-        {product.imageUrls?.length > 0 && (
-        <div className="flex gap-2 flex-wrap">
-          {product.imageUrls.map((url: string, i: number) => (
-            <img key={i} src={url} alt={`Ảnh ${i + 1}`} className="w-32 h-32 rounded object-cover" />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 bg-white rounded-xl shadow-2xl p-8">
+      <div className="flex flex-col items-center">
+        {product.imageUrls?.length > 0 ? (
+          <div className="relative w-80 h-80">
+            <img
+              src={product.imageUrls[0]}
+              alt={product.name}
+              className="w-full h-full rounded-xl object-cover transition-transform duration-300 hover:scale-105 shadow"
+            />
+            {/* Nếu nhiều ảnh, thêm slider/carousel ở đây */}
+          </div>
+        ) : (
+          <div className="w-80 h-80 flex items-center justify-center bg-gray-100 rounded-xl">
+            <span className="text-gray-400">Không có ảnh</span>
+          </div>
+        )}
+        <div className="flex gap-2 mt-4">
+          {product.imageUrls?.slice(1, 4).map((url: string, i: number) => (
+            <img
+              key={i}
+              src={url}
+              alt={`Ảnh phụ ${i + 2}`}
+              className="w-16 h-16 rounded-md object-cover border hover:border-blue-400 transition"
+            />
           ))}
         </div>
-        )}
-        <div className="space-y-5">
-          <h1 className="text-3xl font-bold text-gray-900">{product.name}</h1>
-          <p className="text-gray-600 text-base">{product.description}</p>
-          <div className="text-2xl font-semibold text-red-600">
-            {product.price.toLocaleString()} ₫
+      </div>
+      <div className="flex flex-col justify-between space-y-6">
+        <div>
+           <div>
+            <h3 className="text-4xl font-extrabold text-gray-900">{product.name}</h3>
+            <div
+              className={`mt-2 text-gray-700 text-sm leading-relaxed transition-all duration-300 ${
+                showFullDescription ? '' : 'line-clamp-3'
+              }`}
+              dangerouslySetInnerHTML={{ __html: product.description || '' }}
+            ></div>
+            {(product.description?.length ?? 0) > 0 && (
+              <button
+                onClick={() => setShowFullDescription(!showFullDescription)}
+                className="mt-2 text-blue-600 hover:underline text-sm font-medium"
+              >
+                {showFullDescription ? 'Thu gọn ▲' : 'Xem thêm ▼'}
+              </button>
+            )}
           </div>
-          <p className="text-sm text-gray-500">
-            Tình trạng: {product.instock > 0 ? 'Còn hàng' : 'Hết hàng'}
-          </p>
+        </div>
+        <div className="flex items-center gap-4">
+          <div className="text-3xl font-bold text-red-600">{product.price.toLocaleString()} ₫</div>
+          <span className={`px-3 py-1 rounded-full text-sm font-medium ${product.instock > 0 ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-500'}`}>
+            {product.instock > 0 ? 'Còn hàng' : 'Hết hàng'}
+          </span>
+        </div>
+        <div className="flex gap-4 items-center">
           <AddToCartButton productId={product.id} />
           <button
             onClick={handleAddToWishlist}
-            className="text-red-500 hover:text-red-600"
+            className={`p-2 rounded-full border ${added ? 'bg-red-100 text-red-500' : 'hover:bg-gray-100 text-gray-400'}`}
             aria-label={added ? 'Đã thêm vào wishlist' : 'Thêm vào wishlist'}
             disabled={added}
           >
@@ -142,6 +180,8 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
           </button>
         </div>
       </div>
+    </div>
+
 
       {/* Đánh giá sản phẩm */}
       <div className="bg-white rounded-lg shadow p-6">

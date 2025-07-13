@@ -54,7 +54,7 @@ namespace Controllers
 
         // POST: api/products
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] Product request)
+        public async Task<IActionResult> Create([FromBody] ProductDto request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);

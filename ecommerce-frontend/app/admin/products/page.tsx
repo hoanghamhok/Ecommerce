@@ -29,7 +29,6 @@ export default function ProductPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [uploading, setUploading] = useState(false);
-
   const [form, setForm] = useState<Omit<Product, 'id' | 'category' | 'createdAt'>>({
     name: '',
     description: '',

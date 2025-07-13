@@ -26,7 +26,7 @@ type Product = {
   id: number;
   name: string;
   price: number;
-  imageUrl?: string;
+  imageUrls?: string;
   category?: string;
   rating?: number;
   reviews?: number;
@@ -400,7 +400,7 @@ export default function ShopPage() {
                   viewMode === 'list' ? 'sm:w-64 flex-shrink-0' : ''
                 }`}>
                   <img
-                    src={product.imageUrl || '/default-image.png'}
+                    src={product.imageUrls?.[0] || '/default-image.png'}
                     alt={product.name}
                     className={`w-full object-cover transition-transform duration-500 group-hover:scale-110 ${
                       viewMode === 'list' ? 'h-48 sm:h-full' : 'h-64'
