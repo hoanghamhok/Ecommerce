@@ -41,9 +41,7 @@ export const deleteProduct = (id: number) =>
 
 
 // Upload image
-export const uploadImage = (file: File) => {
-  const formData = new FormData();
-  formData.append('file', file);
+export const uploadImage = (formData: FormData) => {
   return API.post('/files/upload', formData, {
     headers: { "Content-Type": "multipart/form-data" }
   });

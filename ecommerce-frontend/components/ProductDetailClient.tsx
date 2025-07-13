@@ -115,13 +115,13 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
 
       {/* Thông tin sản phẩm */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 bg-white rounded-lg shadow-lg p-6">
-        <div className="flex justify-center items-center">
-          <img
-            src={product.imageUrl || 'https://via.placeholder.com/400'}
-            alt={product.name}
-            className="rounded-lg max-h-[400px] w-full object-contain"
-          />
+        {product.imageUrls?.length > 0 && (
+        <div className="flex gap-2 flex-wrap">
+          {product.imageUrls.map((url: string, i: number) => (
+            <img key={i} src={url} alt={`Ảnh ${i + 1}`} className="w-32 h-32 rounded object-cover" />
+          ))}
         </div>
+        )}
         <div className="space-y-5">
           <h1 className="text-3xl font-bold text-gray-900">{product.name}</h1>
           <p className="text-gray-600 text-base">{product.description}</p>
