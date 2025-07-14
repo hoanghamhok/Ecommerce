@@ -37,6 +37,7 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
   const [rating, setRating] = useState<number | null>(null);
   const [loadingReviews, setLoadingReviews] = useState(false);
   const [loadingRating, setLoadingRating] = useState(false);
+  const [mainImage, setMainImage] = useState(product.imageUrls?.[0] || '/default-image.png');
 
   useEffect(() => {
     const fetchReviews = async () => {
@@ -120,9 +121,9 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
         {product.imageUrls?.length > 0 ? (
           <div className="relative w-80 h-80">
             <img
-              src={product.imageUrls[0]}
+              src={mainImage}
               alt={product.name}
-              className="w-full h-full rounded-xl object-cover transition-transform duration-300 hover:scale-105 shadow"
+              className="w-full h-80 object-cover transition-transform duration-500 group-hover:scale-110"
             />
             {/* Nếu nhiều ảnh, thêm slider/carousel ở đây */}
           </div>
@@ -132,12 +133,15 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
           </div>
         )}
         <div className="flex gap-2 mt-4">
-          {product.imageUrls?.slice(1, 4).map((url: string, i: number) => (
+          {product.imageUrls?.slice(0).map((url: string, i: number) => (
             <img
               key={i}
               src={url}
-              alt={`Ảnh phụ ${i + 2}`}
-              className="w-16 h-16 rounded-md object-cover border hover:border-blue-400 transition"
+              alt={`Ảnh phụ ${i + 1}`}
+              onClick={() => setMainImage(url)}
+              className={`w-16 h-16 rounded-md object-cover border hover:border-blue-400 transition cursor-pointer ${
+                url === mainImage ? 'ring-2 ring-blue-500' : ''
+              }`}
             />
           ))}
         </div>
@@ -145,7 +149,7 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
       <div className="flex flex-col justify-between space-y-6">
         <div>
            <div>
-            <h3 className="text-4xl font-extrabold text-gray-900">{product.name}</h3>
+            <h3 className="text-4xl text-gray-900 font-normal">{product.name}</h3>
             <div
               className={`mt-2 text-gray-700 text-sm leading-relaxed transition-all duration-300 ${
                 showFullDescription ? '' : 'line-clamp-3'
@@ -220,11 +224,15 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
                 className="bg-white rounded-lg shadow hover:shadow-xl transition p-4 flex flex-col"
               >
                 <img
-                  src={p.imageUrl || 'https://via.placeholder.com/200'}
+                  src={
+                    p.imageUrls && p.imageUrls.length > 0
+                      ? p.imageUrls[0]
+                      : 'https://via.placeholder.com/200'
+                  }
                   alt={p.name}
                   className="rounded-md h-40 object-contain mb-3"
                 />
-                <h3 className="text-gray-800 font-medium">{p.name}</h3>
+                <h3 className="text-gray-800 font-medium truncate">{p.name}</h3>
                 <p className="text-red-500 text-sm font-semibold mt-1">
                   {p.price.toLocaleString()} ₫
                 </p>

@@ -31,7 +31,6 @@ type Product = {
   rating?: number;
   reviews?: number;
   discount?: number;
-  // discount?: number;
   isNew?: boolean;
   isBestSeller?: boolean;
 };
