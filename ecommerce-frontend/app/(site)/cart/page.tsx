@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from "react";   
-import { fetchCart, updateCartItem } from "../services/api";
+import { fetchCart, updateCartItem,removeCartItem } from "../services/api";
 import { 
   ShoppingCart, 
   Plus, 
@@ -28,7 +28,7 @@ export default function CartPage() {
     const [promoCode, setPromoCode] = useState('');
     const [discount, setDiscount] = useState(0);
     const [showSuccess, setShowSuccess] = useState<{ visible: boolean; orderId?: string }>({ visible: false });
-
+    const [paymentMethod, setPaymentMethod] = useState("cod");
 
     // Hàm lấy danh sách sản phẩm trong giỏ hàng
     useEffect(() => {
@@ -83,11 +83,9 @@ export default function CartPage() {
         setRemovingItems(prev => new Set(prev).add(itemId));
         
         try {
-            // Simulate API call for removing item
-            await new Promise(resolve => setTimeout(resolve, 500));
-            
+            await removeCartItem(productId);      
             setCartItems(prevItems => {
-                const updatedItems = prevItems.filter(item => item.id !== itemId);
+                const updatedItems = prevItems.filter(item => item.cartItemId !== itemId);
                 calculateTotal(updatedItems);
                 return updatedItems;
             });
@@ -111,13 +109,41 @@ export default function CartPage() {
 
     const handleCheckout = async () => {
         setIsCheckingOut(true);
-        
+
         try {
-            const res = await fetch('http://localhost:5091/api/Cart/checkout', {
-                method: 'POST',
+            const token = localStorage.getItem("token");
+
+            if (paymentMethod === "momo") {
+            const response = await fetch("http://localhost:5091/api/cart/checkout-momo", {
+                method: "POST",
                 headers: {
-                    'Authorization': `Bearer ${localStorage.getItem("token")}`,
-                    'Content-Type': 'application/json'
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`
+                },
+                body: JSON.stringify({ items: cartItems, total })
+            });
+
+            if (!response.ok) {
+                throw new Error("Thanh toán MoMo thất bại");
+            }
+
+            const data = await response.json();
+
+            // Nếu server trả về url từ MoMo
+            if (data.url) {
+                window.location.href = data.url;
+                return;
+            }
+
+            setShowSuccess({ visible: true, orderId: data.orderId });
+            }
+
+            else if (paymentMethod === "cod") {
+            const res = await fetch("http://localhost:5091/api/Cart/checkout", {
+                method: "POST",
+                headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json"
                 }
             });
 
@@ -133,18 +159,23 @@ export default function CartPage() {
             if (!res.ok) {
                 throw new Error(data.message || "Lỗi không xác định");
             }
-            if (res.ok) {
-                setShowSuccess({ visible: true, orderId: data.orderId });
-                setCartItems([]);
-                setTotal(0);
-                setTimeout(() => setShowSuccess({ visible: false }), 5000); // Tự động ẩn sau 5s
-            }       
+
+            setShowSuccess({ visible: true, orderId: data.orderId });
+            setCartItems([]);
+            setTotal(0);
+            setTimeout(() => setShowSuccess({ visible: false }), 5000);
+            }
+
+            else {
+            alert("Vui lòng chọn phương thức thanh toán");
+            }
         } catch (error: any) {
+            console.error("Checkout Error:", error);
             alert("Lỗi khi thanh toán: " + error.message);
         } finally {
             setIsCheckingOut(false);
         }
-    };
+        };
 
     // Loading State
     if (loading) {
@@ -272,7 +303,7 @@ export default function CartPage() {
                                 <div 
                                     key={item.product.id}
                                     className={`bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden transition-all duration-300 ${
-                                        removingItems.has(item.id) ? 'opacity-50 scale-95' : 'hover:shadow-md'
+                                        removingItems.has(item.cartItemId) ? 'opacity-50 scale-95' : 'hover:shadow-md'
                                     }`}
                                     style={{ animationDelay: `${index * 100}ms` }}
                                 >
@@ -286,9 +317,9 @@ export default function CartPage() {
                                                     className="w-24 h-24 object-cover rounded-xl"
                                                 />
                                                 <button
-                                                    onClick={() => handleRemoveItem(item.id, item.productId)}
+                                                    onClick={() => handleRemoveItem(item.cartItemId, item.productId)}
                                                     className="absolute -top-2 -right-2 w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors duration-200 shadow-lg"
-                                                    disabled={removingItems.has(item.id)}
+                                                    disabled={removingItems.has(item.cartItemId)}
                                                 >
                                                     <Trash2 className="w-4 h-4" />
                                                 </button>
@@ -319,9 +350,9 @@ export default function CartPage() {
                                                         {/* Quantity Controls */}
                                                         <div className="flex items-center space-x-2 bg-slate-100 rounded-xl p-1">
                                                             <button
-                                                                onClick={() => handleUpdateQuantity(item.id, item.productId, item.quantity - 1)}
+                                                                onClick={() => handleUpdateQuantity(item.cartItemId, item.productId, item.quantity - 1)}
                                                                 className="w-8 h-8 flex items-center justify-center hover:bg-white rounded-lg transition-colors duration-200"
-                                                                disabled={removingItems.has(item.id)}
+                                                                disabled={removingItems.has(item.cartItemId)}
                                                             >
                                                                 <Minus className="w-4 h-4 text-slate-600" />
                                                             </button>
@@ -329,9 +360,9 @@ export default function CartPage() {
                                                                 {item.quantity}
                                                             </span>
                                                             <button
-                                                                onClick={() => handleUpdateQuantity(item.id, item.productId, item.quantity + 1)}
+                                                                onClick={() => handleUpdateQuantity(item.cartItemId, item.productId, item.quantity + 1)}
                                                                 className="w-8 h-8 flex items-center justify-center hover:bg-white rounded-lg transition-colors duration-200"
-                                                                disabled={removingItems.has(item.id)}
+                                                                disabled={removingItems.has(item.cartItemId)}
                                                             >
                                                                 <Plus className="w-4 h-4 text-slate-600" />
                                                             </button>
@@ -382,6 +413,36 @@ export default function CartPage() {
                                     </div>
                                 )}
                             </div>
+                            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                                {/* Payment Method */}
+                            <h3 className="text-lg font-semibold text-slate-900 mb-4">Phương thức thanh toán</h3>
+                            <div className="space-y-3">
+                                <label className="flex items-center space-x-3">
+                                <input
+                                    type="radio"
+                                    name="payment"
+                                    value="cod"
+                                    checked={paymentMethod === "cod"}
+                                    onChange={(e) => setPaymentMethod(e.target.value)}
+                                    className="form-radio h-5 w-5 text-emerald-600"
+                                />
+                                <span className="text-slate-700">Thanh toán khi nhận hàng (COD)</span>
+                                </label>
+
+                                <label className="flex items-center space-x-3">
+                                <input
+                                    type="radio"
+                                    name="payment"
+                                    value="momo"
+                                    checked={paymentMethod === "momo"}
+                                    onChange={(e) => setPaymentMethod(e.target.value)}
+                                    className="form-radio h-5 w-5 text-emerald-600"
+                                />
+                                <span className="text-slate-700">Thanh toán qua Ví MoMo</span>
+                                </label>
+                            </div>
+                            </div>
+
 
                             {/* Order Summary */}
                             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">

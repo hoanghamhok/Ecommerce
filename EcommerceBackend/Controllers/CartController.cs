@@ -10,6 +10,8 @@ namespace Controllers
     public class CartController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly EmailService _emailService;
+        private readonly MomoPaymentService _momoPaymentService;
         public CartController(AppDbContext context)
         {
             _context = context;
@@ -107,6 +109,25 @@ namespace Controllers
             await _context.SaveChangesAsync();
             return Ok(new { message = "Cập nhật số lượng thành công." });
         }
+        //Xóa sản phẩm khỏi giỏ hàng
+        [HttpDelete("remove/{productId}")]
+        [Authorize]
+        public async Task<IActionResult> RemoveFromCart(int productId)
+        {
+            var userId = GetUserIdFromToken();
+            if (userId == null)
+                return Unauthorized("Không tìm thấy người dùng.");
+
+            var cartItem = await _context.Carts.FirstOrDefaultAsync(
+                c => c.UserId == userId && c.ProductId == productId);
+            if (cartItem == null)
+                return NotFound("Không tìm thấy sản phẩm trong giỏ hàng.");
+
+            _context.Carts.Remove(cartItem);
+            await _context.SaveChangesAsync();
+            return Ok(new { message = "Xóa sản phẩm khỏi giỏ hàng thành công." });
+        }
+        //Thanh toán COD
         [HttpPost("checkout")]
         [Authorize]
         public async Task<IActionResult> Checkout()
@@ -152,8 +173,116 @@ namespace Controllers
             // Xóa giỏ hàng
             _context.Carts.RemoveRange(cartItems);
             await _context.SaveChangesAsync();
-
+            order.Status = "Completed"; // Cập nhật trạng thái đơn hàng
+            var user = await _context.Users.FindAsync(userId.Value);
+            if (user != null && !string.IsNullOrEmpty(user.Email))
+            {
+                string html = $@"<h3>Đơn hàng #{order.OrderId} đã được xác nhận (COD)</h3>
+                                <p>Tổng tiền: {order.TotalAmount:N0}đ</p>";
+                await _emailService.SendEmailAsync(user.Email, "Xác nhận đơn hàng", html);
+            }
             return Ok(new { message = "Thanh toán thành công", orderId = order.OrderId });
+        }
+        //Thanh toán bằng MoMo
+        [HttpPost("checkout-momo")]
+        [Authorize]
+        public async Task<IActionResult> PayWithMomo([FromServices] MomoPaymentService momoService)
+        {
+            var userId = GetUserIdFromToken();
+            if (userId == null) return Unauthorized();
+
+            // Lấy giỏ hàng
+            var cartItems = await _context.Carts
+                .Where(c => c.UserId == userId)
+                .Include(c => c.Product)
+                .ToListAsync();
+
+            if (!cartItems.Any()) return BadRequest("Giỏ hàng trống.");
+
+            decimal totalAmount = cartItems.Sum(i => i.Product.Price * i.Quantity);
+
+            // Tạo đơn hàng chưa thanh toán
+            var order = new Order
+            {
+                UserId = userId.Value,
+                TotalAmount = totalAmount,
+                Status = "Pending",
+                OrderDate = DateTime.Now
+            };
+            _context.Orders.Add(order);
+            await _context.SaveChangesAsync();
+
+            // Trả về link thanh toán
+            string momoUrl = await momoService.CreatePaymentUrl(order, HttpContext);
+            return Ok(new { url = momoUrl });
+        }
+
+        [HttpGet("momo-return")]
+        public async Task<IActionResult> MomoReturn(
+            [FromQuery] string orderId,
+            [FromQuery] string resultCode,
+            [FromServices] EmailService emailService)
+        {
+            if (resultCode != "0")
+                return Redirect("http://localhost:3000/payment-fail");
+
+            var order = await _context.Orders.FindAsync(int.Parse(orderId));
+            if (order == null || order.Status == "Completed")
+                return Redirect("http://localhost:3000/payment-fail");
+
+            var user = await _context.Users.FindAsync(order.UserId);
+
+            // Lấy chi tiết giỏ hàng để lưu lại và gửi email
+            var cartItems = await _context.Carts
+                .Where(c => c.UserId == order.UserId)
+                .Include(c => c.Product)
+                .ToListAsync();
+
+            // Lưu chi tiết đơn hàng
+            foreach (var item in cartItems)
+            {
+                _context.OrderDetails.Add(new OrderDetail
+                {
+                    OrderId = order.OrderId,
+                    ProductId = item.ProductId,
+                    Quantity = item.Quantity,
+                    UnitPrice = item.Product.Price
+                });
+            }
+
+            _context.Carts.RemoveRange(cartItems);
+            order.Status = "Completed";
+            await _context.SaveChangesAsync();
+
+            if (!string.IsNullOrEmpty(user?.Email))
+            {
+                var list = string.Join("", cartItems.Select(i =>
+                    $"<li>{i.Product.Name} x {i.Quantity} - {i.Product.Price:N0}đ</li>"));
+
+                string html = $@"
+                    <h3>Đơn hàng #{order.OrderId} đã thanh toán thành công</h3>
+                    <ul>{list}</ul>
+                    <p><b>Tổng cộng:</b> {order.TotalAmount:N0}đ</p>";
+
+                await emailService.SendEmailAsync(user.Email, "Xác nhận đơn hàng", html);
+            }
+
+            return Redirect($"http://localhost:3000/payment-success?orderId={order.OrderId}");
+        }
+        [HttpPost("momo-notify")]
+        public async Task<IActionResult> MomoNotify([FromBody] MomoNotifyModel notify)
+        {
+            if (notify.ResultCode == 0)
+            {
+                var order = await _context.Orders.FindAsync(notify.OrderId);
+                if (order != null)
+                {
+                    order.Status = "Paid";
+                    await _context.SaveChangesAsync();
+                }
+            }
+
+            return Ok(); // MoMo yêu cầu luôn trả 200 OK
         }
         public class CartRequest
         {

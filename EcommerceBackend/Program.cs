@@ -4,6 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Text.Json;
 using System.Security.Claims;
+using Services;
 
 var builder = WebApplication.CreateBuilder(new WebApplicationOptions
 {
@@ -89,7 +90,7 @@ builder.Services.AddSwaggerGen(c =>
         BearerFormat = "JWT",
         In = Microsoft.OpenApi.Models.ParameterLocation.Header,
         Description = "Nhập token theo định dạng: Bearer {token}"
-});
+    });
 
     c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
     {
@@ -106,7 +107,11 @@ builder.Services.AddSwaggerGen(c =>
         }
     });
 });
-
+//Add Review Service
+builder.Services.AddScoped<IReviewService, ReviewService>();
+// Add Mail Service
+builder.Services.AddScoped<EmailService>();
+builder.Services.AddScoped<MomoPaymentService>();
 var app = builder.Build();
 
 // Use static files

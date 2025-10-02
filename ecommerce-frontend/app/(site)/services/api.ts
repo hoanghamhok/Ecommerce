@@ -1,3 +1,5 @@
+
+
 import axios from 'axios';
 
 const API = axios.create({
@@ -79,6 +81,14 @@ export const updateCartItem = (productId: number, quantity: number) => {
     }
   });
 }
+//Xóa sản phẩm khỏi giỏ
+export const removeCartItem = (productId: number) => {
+  return API.delete(`/cart/remove/${productId}`, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('token')}`
+    }
+  });
+}
 //API người dùng
 export const fetchUsers = () => API.get("/users", {
   headers: {
@@ -97,7 +107,4 @@ export const fetchOrders = () =>
       Authorization: `Bearer ${localStorage.getItem('token')}`
     }
   });
-
-
-
 export default API;

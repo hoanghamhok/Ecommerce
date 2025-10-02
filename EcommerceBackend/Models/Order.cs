@@ -19,6 +19,8 @@ namespace Models{
 
         [Required]
         public decimal TotalAmount { get; set; }
+        [Required]
+        public string Status { get; set; } = "Pending"; // Default status
 
         public User? User { get; set; }
         public virtual ICollection<OrderDetail> OrderDetails { get; set; }

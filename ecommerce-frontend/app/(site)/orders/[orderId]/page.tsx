@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { CheckCircle, Clock, User, Truck, CreditCard, ArrowLeft } from 'lucide-react';
+import ReviewForm from '@/app/(site)/shop/product/[id]/ReviewForm';
 
 export default function OrderDetailPage() {
   const router = useRouter();
@@ -143,6 +144,7 @@ export default function OrderDetailPage() {
                     <th className="px-4 py-3 text-right text-sm font-medium text-gray-700">Đơn giá</th>
                     <th className="px-4 py-3 text-right text-sm font-medium text-gray-700">Số lượng</th>
                     <th className="px-4 py-3 text-right text-sm font-medium text-gray-700">Thành tiền</th>
+                    <th className="px-4 py-3 text-right text-sm font-medium text-gray-700">Đánh giá</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -154,6 +156,7 @@ export default function OrderDetailPage() {
                       <td className="px-4 py-3 text-right text-sm font-medium">
                         {(item.unitPrice * item.quantity).toLocaleString()}₫
                       </td>
+                      <td className="px-4 py-3 text-right text-sm"><ReviewForm productId={item.productId} /></td>
                     </tr>
                   ))}
                 </tbody>
