@@ -10,7 +10,7 @@ type Product = {
   description: string;
   price: number;
   instock: number;
-  imageUrl?: string;
+  imageUrls?: string[];
   discount?: number;
   categoryId: number;
   category?: any;
@@ -29,13 +29,12 @@ export default function ProductPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [uploading, setUploading] = useState(false);
-
   const [form, setForm] = useState<Omit<Product, 'id' | 'category' | 'createdAt'>>({
     name: '',
     description: '',
     price: 0,
     instock: 0,
-    imageUrl: '',
+    imageUrls: [],
     discount: 0,
     categoryId: 0,
   });
@@ -57,7 +56,7 @@ export default function ProductPage() {
       description: '',
       price: 0,
       instock: 0,
-      imageUrl: '',
+      imageUrls: [],
       discount: 0,
       categoryId: categories[0]?.id || 0
     });
@@ -71,7 +70,7 @@ export default function ProductPage() {
       description: product.description || '',
       price: product.price,
       instock: product.instock,
-      imageUrl: product.imageUrl || '',
+      imageUrls: product.imageUrls || [],
       discount: product.discount || 0,
       categoryId: product.categoryId || categories[0]?.id || 0
     });
@@ -149,7 +148,9 @@ export default function ProductPage() {
                 <td className="px-4 py-2">{p.categoryName || 'Không có'}</td>
                 <td className="px-4 py-2 text-red-500">{p.discount}%</td>
                 <td className="px-4 py-2">
-                  {p.imageUrl && <img src={p.imageUrl} alt={p.name} className="w-16 h-16 object-cover rounded shadow" />}
+                  {p.imageUrls && p.imageUrls.length > 0 && p.imageUrls.map((url, idx) => (
+                    <img key={idx} src={url} alt={p.name} className="w-16 h-16 object-cover rounded shadow inline-block mr-2" />
+                  ))}
                 </td>
                 <td className="px-4 py-2 space-x-2">
                   <button className="bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-1 rounded shadow" onClick={() => openEditModal(p)}>Sửa</button>
@@ -171,20 +172,44 @@ export default function ProductPage() {
             <input type="number" name="instock" value={form.instock} onChange={handleChange} placeholder="Tồn kho" min={0} className="border border-gray-300 p-2 rounded" required />
           </div>
           <input type="number" name="discount" value={form.discount ?? 0} onChange={handleChange} placeholder="Giảm giá (%)" min={0} max={100} className="w-full border border-gray-300 p-2 rounded" />
-          <input type="file" accept="image/*" onChange={async (e) => {
-            if (e.target.files && e.target.files[0]) {
-              setUploading(true);
-              try {
-                const res = await uploadImage(e.target.files[0]);
-                const data = res.data as { imageUrl: string };
-                setForm({ ...form, imageUrl: data.imageUrl });
-              } catch {
-                alert('Tải ảnh lên thất bại!');
+          <input
+            type="file"
+            accept="image/*"
+            multiple
+            onChange={async (e) => {
+              if (e.target.files && e.target.files.length > 0) {
+                setUploading(true);
+                try {
+                  const formData = new FormData();
+                  Array.from(e.target.files).forEach(file => formData.append("files", file));
+
+                  const res = await uploadImage(formData);
+                  const data = res.data as { imageUrls: string[] };
+
+                  if (data?.imageUrls?.length) {
+                    setForm(prev => ({
+                      ...prev,
+                      imageUrls: [...(prev.imageUrls ?? []), ...data.imageUrls] // 🔥 nối ảnh cũ + mới
+                    }));
+                  } else {
+                    alert("Không nhận được danh sách ảnh.");
+                  }
+                } catch (err) {
+                  console.error('Upload failed', err);
+                  alert("Tải ảnh thất bại");
+                }
+                setUploading(false);
               }
-              setUploading(false);
-            }
-          }} className="w-full border p-2 rounded" />
-          {form.imageUrl && (<img src={form.imageUrl} alt="Preview" className="w-32 h-32 object-cover mt-2 rounded border shadow" />)}
+            }}
+            className="w-full border p-2 rounded"
+          />
+          {(form.imageUrls?.length ?? 0) > 0 && (
+            <img
+              src={form.imageUrls![0]}
+              alt="Ảnh đại diện"
+              className="w-32 h-32 object-cover mt-2 rounded border shadow"
+            />
+          )}
           {uploading && <p className="text-blue-600 text-sm">Đang tải ảnh lên...</p>}
           <select name="categoryId" value={form.categoryId} onChange={handleChange} className="w-full border border-gray-300 p-2 rounded" required>
             <option value="">-- Chọn danh mục --</option>

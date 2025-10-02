@@ -27,8 +27,8 @@ namespace Models{
         [Column(TypeName = "int")]  
         public int Instock {get; set;}
 
-        [Column(TypeName = "nvarchar(255)")]
-        public string? ImageUrl {get; set;}
+        [Column(TypeName = "nvarchar(MAX)")]
+        public List<string> ImageUrls { get; set; } = new();
         [Column(TypeName = "int")]
         public int? Discount { get; set; }
         [Required]

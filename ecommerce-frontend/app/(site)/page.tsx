@@ -55,7 +55,7 @@ export default function Home() {
               products.map((p) => (
                 <div key={p.id} className="bg-white rounded-xl overflow-hidden shadow hover:shadow-xl transition-all">
                   <div className="h-48 bg-gray-100 flex items-center justify-center">
-                    <img src={p.imageUrl || '/placeholder.jpg'} alt={p.name} className="object-contain max-h-full" />
+                    <img src={p.imageUrls?.[0] || '/placeholder.jpg'} alt={p.name} className="object-contain max-h-full" />
                   </div>
                   <div className="p-4 flex flex-col h-60">
                     <h3 className="font-bold text-gray-700 text-lg mb-1 line-clamp-1">{p.name}</h3>

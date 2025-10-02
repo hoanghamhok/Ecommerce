@@ -28,7 +28,7 @@ namespace Controllers
                 Name = p.Name,
                 Price = p.Price,
                 Discount = p.Discount,Description = p.Description,
-                ImageUrl = p.ImageUrl,Instock = p.Instock,
+                ImageUrls = p.ImageUrls,Instock = p.Instock,
                 PriceAfterDiscount = p.Discount.HasValue
                     ? Math.Round(p.Price * (1 - (decimal)p.Discount.Value / 100), 0)
                     : p.Price,
@@ -54,7 +54,7 @@ namespace Controllers
 
         // POST: api/products
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] Product request)
+        public async Task<IActionResult> Create([FromBody] ProductDto request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -70,7 +70,7 @@ namespace Controllers
                 Description = request.Description,
                 Price = request.Price,
                 Instock = request.Instock,
-                ImageUrl = request.ImageUrl,
+                ImageUrls = request.ImageUrls,
                 Discount = request.Discount,
                 CategoryId = request.CategoryId,
                 CreatedAt = DateTime.UtcNow
@@ -101,7 +101,7 @@ namespace Controllers
             product.Description = request.Description;
             product.Price = request.Price;
             product.Instock = request.Instock;
-            product.ImageUrl = request.ImageUrl;
+            product.ImageUrls = request.ImageUrls;
             product.Discount = request.Discount;
             product.CategoryId = request.CategoryId;
             // product.CreatedAt giữ nguyên
@@ -156,7 +156,7 @@ namespace Controllers
             public required string Name { get; set; }
             public decimal Price { get; set; }
             public string? Description { get; set; }
-            public string? ImageUrl { get; set; }
+            public List<string>? ImageUrls { get; set; }
             public int Instock { get; set; }
             public int? Discount { get; set; }
             public decimal PriceAfterDiscount { get; set; }
