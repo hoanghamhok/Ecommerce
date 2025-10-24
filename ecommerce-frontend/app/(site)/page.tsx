@@ -7,15 +7,26 @@ import PromoBanner from '@/components/PromoBanner';
 import BrandSlider from '@/components/BrandSlider';
 import BlogPreview from '@/components/BlogPreview';
 import FAQSection from '@/components/FAQ';
+import ProductsGrid from '@/components/ProductGrid';
 
+// import { Product } from '@/components/ProductGrid';
 export default function Home() {
   const [products, setProducts] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
-  fetchProducts().then((res) => {
-    setProducts(res.data as any[]);
-  });
-}, []);
+    setIsLoading(true);
+    fetchProducts()
+      .then((res) => {
+        setProducts(res.data as any[]);
+      })
+      .catch(() => {
+        setProducts([]);
+      })
+      .then(() => {
+        setIsLoading(false);
+      });
+  }, []);
 
   const handleAddToCart = async (productId: number) => {
     try {
@@ -45,7 +56,7 @@ export default function Home() {
       </section>
       <BrandSlider />
       {/* Product Section */}
-      <section id="products" className="bg-gray-100 py-16">
+      {/* <section id="products" className="bg-gray-100 py-16">
         <div className="max-w-7xl mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-10 text-gray-800">Sản phẩm nổi bật</h2>
           <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
@@ -78,10 +89,11 @@ export default function Home() {
                   </div>
                 </div>
               ))
-            )}
+      <ProductsGrid products={products} loading={isLoading} onAddToCart={handleAddToCart} />
           </div>
         </div>
-      </section>
+      </section> */}
+      <ProductsGrid products={products} loading={isLoading} onAddToCart={handleAddToCart} />.
       <BlogPreview />
       <FAQSection />
       {/* Footer

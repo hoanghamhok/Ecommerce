@@ -6,6 +6,7 @@ import { Toaster } from 'sonner';
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
+
 export const metadata: Metadata = {
   title: "GoCart - Trang thương mại điện tử",
   description: "Website bán hàng Next.js + ASP.NET",
