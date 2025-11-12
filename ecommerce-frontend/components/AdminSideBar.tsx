@@ -9,7 +9,9 @@ import {
   faUsers,
   faStar,
   faFolder,
-  faUser
+  faUser,
+  faTags,
+  faTag
 } from '@fortawesome/free-solid-svg-icons';
 
 export default function AdminSidebar() {
@@ -22,6 +24,7 @@ export default function AdminSidebar() {
     { name: 'Đơn hàng', icon: faFileInvoice, color: 'text-green-500', href: '/admin/orders' },
     { name: 'Người dùng', icon: faUsers, color: 'text-pink-500', href: '/admin/users' },
     { name: 'Khuyến mãi', icon: faStar, color: 'text-yellow-500', href: '/admin/discount' },
+    { name: 'Phân tích', icon: faTag, color: 'text-yellow-500', href: '/admin/analytics' },
   ];
 
   const accountItems = [

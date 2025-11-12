@@ -18,6 +18,7 @@ public class AppDbContext : DbContext
     public DbSet<Wishlist> Wishlists { get; set; }
     public DbSet<Review> Reviews { get; set; }
     public DbSet<ProductRating> ProductRatings { get; set; }
+    public DbSet<ProductAnalytics> ProductAnalytics { get; set; }
       protected override void OnModelCreating(ModelBuilder modelBuilder)
       {
             base.OnModelCreating(modelBuilder);
@@ -121,5 +122,13 @@ public class AppDbContext : DbContext
                   ? new List<string>()
                   : JsonSerializer.Deserialize<List<string>>(v, (JsonSerializerOptions?)null)
             );
+            modelBuilder.Entity<ProductAnalytics>(e =>
+            {
+                  e.HasIndex(x => x.ProductId).IsUnique();
+                  e.HasOne(x => x.Product)
+                  .WithMany() // hoặc .WithOne() nếu bạn muốn 1-1 cứng
+                  .HasForeignKey(x => x.ProductId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            });
         }
 }
