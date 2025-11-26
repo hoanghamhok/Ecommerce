@@ -6,6 +6,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.Extensions.Configuration;
 
 
 [ApiController]
@@ -70,6 +74,33 @@ public class AuthController : Controller{
         return new JwtSecurityTokenHandler()
                     .WriteToken(token);
 
+    }
+    [HttpGet("google-login")]
+    public IActionResult GoogleLogin()
+    {
+        var redirectUrl = Url.Action("GoogleResponse", "Auth");
+        var properties = new AuthenticationProperties { RedirectUri = redirectUrl };
+        return Challenge(properties, GoogleDefaults.AuthenticationScheme);
+    }
+
+    [HttpGet("google-callback")]
+    public async Task<IActionResult> GoogleResponse()
+    {
+        var authenticateResult = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+        if (!authenticateResult.Succeeded)
+            return BadRequest("Google authentication failed.");
+
+        var claims = authenticateResult.Principal.Identities.First().Claims.ToList();
+        var email = claims.FirstOrDefault(c => c.Type.Contains("email"))?.Value;
+        var name = claims.FirstOrDefault(c => c.Type.Contains("name"))?.Value;
+
+        // Tạo JWT của bạn
+        var token = JwtHelper.GenerateJwtToken(email!, name!);
+
+        // Redirect về frontend Next.js với token
+        var frontendUrl = $"http://localhost:3000/auth/callback?token={token}";
+        return Redirect(frontendUrl);
     }
 }
 

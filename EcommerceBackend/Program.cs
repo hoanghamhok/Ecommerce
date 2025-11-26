@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.Json;
 using System.Security.Claims;
 using Services;
+using Microsoft.AspNetCore.Authentication.Google;
 
 var builder = WebApplication.CreateBuilder(new WebApplicationOptions
 {
@@ -18,45 +19,45 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 );
 
 // Add Authentication with JWT Bearer
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
+    builder.Services.AddAuthentication(options =>
+{
+    // Scheme mặc định để xác thực API
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
     {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = false,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidIssuer = builder.Configuration["Jwt:Issuer"],
-            ValidAudience = builder.Configuration["Jwt:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
-            RoleClaimType = ClaimTypes.Role
-        };
+        ValidateIssuer = false,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        ValidAudience = builder.Configuration["Jwt:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
+        RoleClaimType = ClaimTypes.Role
+    };
 
-        options.Events = new JwtBearerEvents
+    options.Events = new JwtBearerEvents
+    {
+        OnChallenge = context =>
         {
-            OnChallenge = context =>
-            {
-                context.HandleResponse();
-                context.Response.StatusCode = 401;
-                context.Response.ContentType = "application/json";
-                var result = JsonSerializer.Serialize(new { message = "Unauthorized" });
-                return context.Response.WriteAsync(result);
-            },
-            OnAuthenticationFailed = context =>
-            {
-                // Optional: Log lỗi nếu cần
-                return Task.CompletedTask;
-            },
-            OnTokenValidated = context =>
-            {
-                Console.WriteLine("Token is valid");
-                return Task.CompletedTask;
-            }
-        };
-    });
-
-// Add Authorization (🔑 BẮT BUỘC khi dùng app.UseAuthorization)
-builder.Services.AddAuthorization();
+            context.HandleResponse();
+            context.Response.StatusCode = 401;
+            context.Response.ContentType = "application/json";
+            var result = JsonSerializer.Serialize(new { message = "Unauthorized" });
+            return context.Response.WriteAsync(result);
+        }
+    };
+})
+.AddGoogle(options =>
+{
+    options.ClientId = builder.Configuration["Google:ClientId"];
+    options.ClientSecret = builder.Configuration["Google:ClientSecret"];
+    options.CallbackPath = "/api/auth/google-callback"; // route callback
+});
+    // Add Authorization (🔑 BẮT BUỘC khi dùng app.UseAuthorization)
+    builder.Services.AddAuthorization();
 
 // Add CORS
 builder.Services.AddCors(options =>
