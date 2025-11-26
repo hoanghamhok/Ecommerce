@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { fetchProducts, createProduct, updateProduct, deleteProduct, fetchCategories, uploadImage } from '@/app/(site)/services/api';
+import { fetchProducts, createProduct, updateProduct, deleteProduct, fetchCategories, uploadImage } from '@/services/api';
 import Modal from '@/components/Modal';
 
 type Product = {

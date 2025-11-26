@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { fetchCategories } from '@/app/(site)/services/api'; // cập nhật đường dẫn đúng nếu cần
+import { fetchCategories } from '@/services/api'; // cập nhật đường dẫn đúng nếu cần
 
 type Category = {
   id: number;

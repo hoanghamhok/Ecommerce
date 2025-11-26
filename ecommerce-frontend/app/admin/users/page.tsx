@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { fetchUsers, createUser } from '@/app/(site)/services/api';
+import { fetchUsers, createUser } from '@/services/api';
 import { UserPlus } from 'lucide-react';
 
 type User = {

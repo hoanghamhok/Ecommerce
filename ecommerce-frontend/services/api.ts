@@ -105,4 +105,30 @@ export const fetchOrders = () =>
       Authorization: `Bearer ${localStorage.getItem('token')}`
     }
   });
+//Chatbot Advisor
+  export async function fetchChatbotAnswer(question: string) {
+  try {
+    const res = await fetch('http://localhost:5091/api/chatbotadvisor', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ question }),
+    });
+    
+    if (!res.ok) {
+      throw new Error(`API Error: ${res.status} ${res.statusText}`);
+    }
+
+    const data = await res.json();
+    
+    if (!data.answer) {
+      throw new Error("API response did not contain an 'answer'.");
+    }
+    
+    return data.answer;
+  } catch (error) {
+    console.error("Failed to fetch chatbot answer:", error);
+    // Re-throw the error to be caught by handleSendMessage
+    throw error;
+  }
+}
 export default API;

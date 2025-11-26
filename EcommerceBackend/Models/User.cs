@@ -28,7 +28,11 @@ namespace Models{
         [StringLength(20)]
         [Column(TypeName = "varchar(20)")]
         public string Phone {get; set;}
-        public string Email {get; set;} 
+        public string Email {get; set;}
+        [StringLength(10)]
+        public string? Gender { get; set; }  // Ví dụ: "Male", "Female", "Other"
+
+        public int? Age { get; set; }
 
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public DateTime? CreatAt {get; set;} = DateTime.UtcNow;

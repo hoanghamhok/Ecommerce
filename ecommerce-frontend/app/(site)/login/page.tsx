@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { login } from "../services/api";
+import { login } from "../../../services/api";
 import { Lock, User, Loader2, ArrowRight, LogIn } from "lucide-react";
 
 export default function LoginPage() {

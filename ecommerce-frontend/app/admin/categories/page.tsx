@@ -6,7 +6,7 @@ import {
   createCategory,
   updateCategory,
   deleteCategory,
-} from '@/app/(site)/services/api';
+} from '@/services/api';
 
 export default function Category() {
   const [categories, setCategories] = useState<any[]>([]);

@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import Navbar from "@/components/Navbar"; // ✅ Import navbar
 import UserSidebar from "@/components/UserSidebar"; // ✅ Import UserSidebar
 import Footer from "@/components/Footer"; // ✅ Import footer
+import FloatingChatbot from "@/components/ChatbotAdvisorBox"; // ✅ Import FloatingChatbot
 <meta charSet="UTF-8" />
 
 const geistSans = Geist({
@@ -30,6 +31,7 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
         <main className="flex-1 min-h-screen p-4">{children}</main>
       </div>
       <Footer />
+      <FloatingChatbot />
     </>
   );
 }

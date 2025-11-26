@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState } from "react";   
-import { fetchCart, updateCartItem,removeCartItem } from "../services/api";
+import { fetchCart, updateCartItem,removeCartItem } from "../../../services/api";
+import { useRouter } from 'next/navigation';
 import { 
   ShoppingCart, 
   Plus, 
@@ -29,7 +30,10 @@ export default function CartPage() {
     const [discount, setDiscount] = useState(0);
     const [showSuccess, setShowSuccess] = useState<{ visible: boolean; orderId?: string }>({ visible: false });
     const [paymentMethod, setPaymentMethod] = useState("cod");
-
+    const router = useRouter();
+    const goCheckout = () => {
+    router.push('/checkout');
+    }
     // Hàm lấy danh sách sản phẩm trong giỏ hàng
     useEffect(() => {
         const loadCart = async () => {
@@ -474,7 +478,7 @@ export default function CartPage() {
                                 </div>
 
                                 <button
-                                    onClick={handleCheckout}
+                                    onClick={goCheckout}
                                     disabled={isCheckingOut}
                                     className="w-full bg-gradient-to-r from-emerald-500 to-blue-500 text-white py-4 rounded-2xl font-bold text-lg hover:from-emerald-600 hover:to-blue-600 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                                 >

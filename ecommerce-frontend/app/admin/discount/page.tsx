@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { fetchProducts, createProduct } from '@/app/(site)/services/api';
+import { fetchProducts, createProduct } from '@/services/api';
 import { Plus, Percent, BadgeDollarSign, ShoppingBag } from 'lucide-react';
 
 type Product = {

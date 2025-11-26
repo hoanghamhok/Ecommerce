@@ -2,12 +2,14 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { addToCart, fetchProducts } from './services/api';
+import { addToCart, fetchProducts } from '../../services/api';
 import PromoBanner from '@/components/PromoBanner';
 import BrandSlider from '@/components/BrandSlider';
 import BlogPreview from '@/components/BlogPreview';
 import FAQSection from '@/components/FAQ';
 import ProductsGrid from '@/components/ProductGrid';
+import PredictionRecommendation from '@/components/PredictionBox';
+import FloatingChatbot from '@/components/ChatbotAdvisorBox';
 
 // import { Product } from '@/components/ProductGrid';
 export default function Home() {
@@ -40,6 +42,7 @@ export default function Home() {
   return (
     <div>
       <PromoBanner/>
+      <PredictionRecommendation />
       {/* Highlights */}
       <section className="max-w-7xl mx-auto my-16 px-4 grid grid-cols-1 md:grid-cols-3 gap-8">
         {[
@@ -55,51 +58,10 @@ export default function Home() {
         ))}
       </section>
       <BrandSlider />
-      {/* Product Section */}
-      {/* <section id="products" className="bg-gray-100 py-16">
-        <div className="max-w-7xl mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-10 text-gray-800">Sản phẩm nổi bật</h2>
-          <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-            {products.length === 0 ? (
-              <div className="col-span-full text-center text-gray-500">Đang tải sản phẩm...</div>
-            ) : (
-              products.map((p) => (
-                <div key={p.id} className="bg-white rounded-xl overflow-hidden shadow hover:shadow-xl transition-all">
-                  <div className="h-48 bg-gray-100 flex items-center justify-center">
-                    <img src={p.imageUrls?.[0] || '/placeholder.jpg'} alt={p.name} className="object-contain max-h-full" />
-                  </div>
-                  <div className="p-4 flex flex-col h-60">
-                    <h3 className="font-bold text-gray-700 text-lg mb-1 line-clamp-1">{p.name}</h3>
-                    <p className="text-sm text-gray-500 mb-2 line-clamp-2 flex-1">{p.description}</p>
-                    <div className="text-blue-600 font-bold text-xl mb-2">{Number(p.price).toLocaleString()} ₫</div>
-                    <div className="mt-auto space-y-2">
-                      <Link
-                        href={`shop/product/${p.id}`}
-                        className="block text-center bg-blue-600 hover:bg-blue-700 text-white rounded py-2"
-                      >
-                        Xem chi tiết
-                      </Link>
-                      <button
-                        onClick={() => handleAddToCart(p.id)}
-                        className="w-full bg-yellow-500 hover:bg-yellow-600 text-white rounded py-2"
-                      >
-                        Thêm vào giỏ hàng
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))
-      <ProductsGrid products={products} loading={isLoading} onAddToCart={handleAddToCart} />
-          </div>
-        </div>
-      </section> */}
       <ProductsGrid products={products} loading={isLoading} onAddToCart={handleAddToCart} />.
       <BlogPreview />
       <FAQSection />
-      {/* Footer
-      <footer className="bg-gray-900 text-gray-300 text-center py-6 mt-16">
-        <div className="text-sm">&copy; {new Date().getFullYear()} GoCart. Mọi quyền được bảo lưu.</div>
-      </footer> */}
+      
     </div>
   );
 }
