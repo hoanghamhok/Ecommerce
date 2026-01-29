@@ -108,8 +108,17 @@ builder.Services.AddSwaggerGen(c =>
         }
     });
 });
-//Add Review Service
+// Add Services
 builder.Services.AddScoped<IReviewService, ReviewService>();
+builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<ICartService, CartService>();
+builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IWishlistService, WishlistService>();
+builder.Services.AddScoped<IAnalyticsService, AnalyticsService>();
+
 // Add Mail Service
 builder.Services.AddScoped<EmailService>();
 builder.Services.AddScoped<MomoPaymentService>();

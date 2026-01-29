@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Models;
+using Services;
 
 namespace Controllers
 {
@@ -8,53 +7,40 @@ namespace Controllers
     [Route("api/users")]
     public class UserController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly IUserService _userService;
 
-        public UserController(AppDbContext context)
+        public UserController(IUserService userService)
         {
-            _context = context;
+            _userService = userService;
         }
 
         //Tạo mới người dùng (User)
         [HttpPost]
-        public async Task<ActionResult<User>> CreateUser(
-            [FromBody] CreateUserRequest request)
+        public async Task<ActionResult<Models.User>> CreateUser([FromBody] CreateUserRequest request)
         {
-            //Kiểm tra xem Username đã tồn tại chưa
-            if (await _context.Users.AnyAsync(
-                u => u.Username == request.Username))
-                return BadRequest("Username đã tồn tại.");
-
-            var user = new User
+            try
             {
-                Username = request.Username,
-                Password = BCrypt.Net.BCrypt.HashPassword(
-                                        request.Password),
-                FullName = request.FullName,
-                Role = "nhanvien",
-                Phone = request.Phone,
-                Email = request.Email + "@gmail.com",
-                IsActive = true
-            };
-
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction(nameof(GetUser),
-                            new { id = user.Id }, user);
+                var user = await _userService.CreateUserAsync(request);
+                return CreatedAtAction(nameof(GetUser), new { id = user.Id }, user);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
+
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> GetUsers()
+        public async Task<ActionResult<IEnumerable<Models.User>>> GetUsers()
         {
-            var users = await _context.Users.ToListAsync();
+            var users = await _userService.GetUsersAsync();
             return Ok(users);
         }
 
         //Lấy người dùng
         [HttpGet("{id}")]
-        public async Task<ActionResult<User>> GetUser(int id)
+        public async Task<ActionResult<Models.User>> GetUser(int id)
         {
-            var user = await _context.Users.FindAsync(id);
+            var user = await _userService.GetUserByIdAsync(id);
             if (user == null)
                 return NotFound();
             return user;
@@ -63,36 +49,15 @@ namespace Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register(CreateUserRequest dto)
         {
-            var userExists = await _context.Users.AnyAsync(u => u.Username == dto.Username || u.Email == dto.Email);
-            if (userExists)
-                return BadRequest("Tên người dùng hoặc email đã tồn tại");
-            var user = new User
+            try
             {
-                Username = dto.Username,
-                Email = dto.Email,
-                Password = BCrypt.Net.BCrypt.HashPassword(dto.Password),
-                FullName = dto.FullName,
-                Phone = dto.Phone,
-                Role = "nhanvien",
-                IsActive = true
-            };
-
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
-
-            return Ok(new { message = "Đăng ký thành công" });
-        }
-    }
-
-    public class CreateUserRequest
-    {
-        public string Username { get; set; }
-        public string Password { get; set; }
-        public string FullName { get; set; }
-        public string Phone { get; set; }
-        public string Email
-        {
-            get; set;
+                await _userService.RegisterAsync(dto);
+                return Ok(new { message = "Đăng ký thành công" });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

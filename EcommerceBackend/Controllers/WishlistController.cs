@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
-using Models;
+using Services;
 
 namespace YourNamespace.Controllers
 {
@@ -10,22 +9,24 @@ namespace YourNamespace.Controllers
     [Authorize]
     public class WishlistController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly IWishlistService _wishlistService;
 
-        public WishlistController(AppDbContext context)
+        public WishlistController(IWishlistService wishlistService)
         {
-            _context = context;
+            _wishlistService = wishlistService;
+        }
+
+        private int? GetUserIdFromToken()
+        {
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier");
+            return userIdClaim != null ? int.Parse(userIdClaim.Value) : (int?)null;
         }
 
         // GET: api/wishlist/user/5
         [HttpGet("user/{userId}")]
-        public async Task<ActionResult<IEnumerable<Wishlist>>> GetWishlistByUser(int userId)
+        public async Task<ActionResult<IEnumerable<Models.Wishlist>>> GetWishlistByUser(int userId)
         {
-            var wishlist = await _context.Wishlists
-                .Include(w => w.Product)
-                .Where(w => w.UserId == userId)
-                .ToListAsync();
-
+            var wishlist = await _wishlistService.GetWishlistByUserAsync(userId);
             return Ok(wishlist);
         }
 
@@ -33,44 +34,32 @@ namespace YourNamespace.Controllers
         [HttpPost]
         public async Task<ActionResult> AddToWishlist([FromBody] WishlistDto dto)
         {
-            // Kiểm tra xem sản phẩm đã có trong wishlist của user chưa
-            var exists = await _context.Wishlists
-                .AnyAsync(w => w.UserId == dto.UserId && w.ProductId == dto.ProductId);
-            if (exists)
-                return BadRequest("Sản phẩm đã có trong wishlist.");
-            // Tạo wishlist entity
-            var wishlist = new Wishlist
+            try
             {
-                UserId = dto.UserId,
-                ProductId = dto.ProductId
-            };
-            _context.Wishlists.Add(wishlist);
-            await _context.SaveChangesAsync();
-
-            return Ok(wishlist);
+                var wishlist = await _wishlistService.AddToWishlistAsync(dto.UserId, dto.ProductId);
+                return Ok(wishlist);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
-
 
         // DELETE: api/wishlist?userId=1&productId=2
         [HttpDelete]
         public async Task<ActionResult> RemoveFromWishlist(int userId, int productId)
         {
-            var item = await _context.Wishlists
-                .FirstOrDefaultAsync(w => w.UserId == userId && w.ProductId == productId);
-
-            if (item == null)
+            var deleted = await _wishlistService.RemoveFromWishlistAsync(userId, productId);
+            if (!deleted)
                 return NotFound("Không tìm thấy sản phẩm trong wishlist.");
-
-            _context.Wishlists.Remove(item);
-            await _context.SaveChangesAsync();
 
             return Ok("Đã xoá khỏi wishlist.");
         }
+
         public class WishlistDto
         {
             public int UserId { get; set; }
             public int ProductId { get; set; }
         }
-
     }
 }
