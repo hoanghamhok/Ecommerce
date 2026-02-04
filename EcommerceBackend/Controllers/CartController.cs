@@ -153,7 +153,7 @@ namespace Controllers
         [HttpPost("momo-notify")]
         public async Task<IActionResult> MomoNotify([FromBody] MomoNotifyModel notify)
         {
-            await _cartService.ProcessMomoNotifyAsync(notify.OrderId, notify.ResultCode);
+            await _cartService.ProcessMomoNotifyAsync(int.Parse(notify.OrderId),notify.ResultCode);
             return Ok(); // MoMo yêu cầu luôn trả 200 OK
         }
     }

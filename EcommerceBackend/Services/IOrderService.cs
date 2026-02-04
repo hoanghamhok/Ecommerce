@@ -6,7 +6,7 @@ namespace Services
     {
         Task<IEnumerable<OrderDto>> GetAllOrdersAsync();
         Task<IEnumerable<Order>> GetUserOrdersAsync(int userId);
-        Task<OrderDetailDto?> GetOrderDetailAsync(int orderId, int userId);
+        Task<OrderDetailResponse?> GetOrderDetailAsync(int orderId, int userId);
         Task<bool> DeleteOrderAsync(int orderId);
     }
 
