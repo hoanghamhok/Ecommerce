@@ -1,5 +1,5 @@
-"use client";
-
+﻿'use client';
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE ?? 'http://localhost:5091';
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { User, Mail, Lock, Phone, UserPlus, Loader2, CheckCircle } from "lucide-react";
@@ -29,7 +29,7 @@ export default function RegisterPage() {
     setError("");
     setSuccess("");
     try {
-      const res = await fetch("http://localhost:5091/api/users/register", {
+      const res = await fetch(`${API_BASE}/api/users/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -42,10 +42,10 @@ export default function RegisterPage() {
         return;
       }
 
-      setSuccess("Đăng ký thành công! Đang chuyển hướng...");
+      setSuccess("ÄÄƒng kÃ½ thÃ nh cÃ´ng! Äang chuyá»ƒn hÆ°á»›ng...");
       setTimeout(() => router.push("/login"), 1500);
     } catch (err) {
-      setError("Đã xảy ra lỗi máy chủ");
+      setError("ÄÃ£ xáº£y ra lá»—i mÃ¡y chá»§");
     } finally {
       setLoading(false);
     }
@@ -60,11 +60,11 @@ export default function RegisterPage() {
             <UserPlus className="w-8 h-8 text-white" />
           </div>
         </div>
-        <h2 className="text-2xl font-bold text-center mb-2 text-slate-800">Tạo tài khoản mới</h2>
-        <p className="text-center text-slate-500 mb-6">Đăng ký để nhận ưu đãi và trải nghiệm mua sắm tuyệt vời cùng GoCart!</p>
+        <h2 className="text-2xl font-bold text-center mb-2 text-slate-800">Táº¡o tÃ i khoáº£n má»›i</h2>
+        <p className="text-center text-slate-500 mb-6">ÄÄƒng kÃ½ Ä‘á»ƒ nháº­n Æ°u Ä‘Ã£i vÃ  tráº£i nghiá»‡m mua sáº¯m tuyá»‡t vá»i cÃ¹ng GoCart!</p>
         {error && (
           <div className="flex items-center bg-red-50 text-red-600 px-4 py-3 rounded-lg mb-4">
-            <span className="mr-2">⚠️</span>
+            <span className="mr-2">âš ï¸</span>
             <span>{error}</span>
           </div>
         )}
@@ -80,7 +80,7 @@ export default function RegisterPage() {
             <input
               type="text"
               name="username"
-              placeholder="Tên đăng nhập"
+              placeholder="TÃªn Ä‘Äƒng nháº­p"
               value={formData.username}
               onChange={handleChange}
               className="w-full pl-10 pr-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
@@ -104,7 +104,7 @@ export default function RegisterPage() {
             <input
               type="password"
               name="password"
-              placeholder="Mật khẩu"
+              placeholder="Máº­t kháº©u"
               value={formData.password}
               onChange={handleChange}
               className="w-full pl-10 pr-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
@@ -116,7 +116,7 @@ export default function RegisterPage() {
             <input
               type="text"
               name="fullname"
-              placeholder="Họ và tên"
+              placeholder="Há» vÃ  tÃªn"
               value={formData.fullname}
               onChange={handleChange}
               className="w-full pl-10 pr-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
@@ -128,7 +128,7 @@ export default function RegisterPage() {
             <input
               type="text"
               name="phone"
-              placeholder="Số điện thoại"
+              placeholder="Sá»‘ Ä‘iá»‡n thoáº¡i"
               value={formData.phone}
               onChange={handleChange}
               className="w-full pl-10 pr-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
@@ -143,20 +143,22 @@ export default function RegisterPage() {
             {loading ? (
               <>
                 <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                Đang đăng ký...
+                Äang Ä‘Äƒng kÃ½...
               </>
             ) : (
-              "Đăng ký"
+              "ÄÄƒng kÃ½"
             )}
           </button>
         </form>
         <div className="text-center mt-6 text-slate-500 text-sm">
-          Đã có tài khoản?{" "}
+          ÄÃ£ cÃ³ tÃ i khoáº£n?{" "}
           <a href="/login" className="text-blue-500 hover:underline font-medium">
-            Đăng nhập ngay
+            ÄÄƒng nháº­p ngay
           </a>
         </div>
       </div>
     </div>
   );
 }
+
+

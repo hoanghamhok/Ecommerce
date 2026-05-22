@@ -1,6 +1,6 @@
+﻿'use client';
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE ?? 'http://localhost:5091';
 // app/orders/page.tsx
-'use client';
-
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -30,13 +30,13 @@ export default function OrdersPage() {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const res = await fetch('http://localhost:5091/api/Order', {
+        const res = await fetch(`${API_BASE}/api/Order`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
         });
 
-        if (!res.ok) throw new Error('Lỗi khi tải đơn hàng');
+        if (!res.ok) throw new Error('Lá»—i khi táº£i Ä‘Æ¡n hÃ ng');
         const data = await res.json();
         setOrders(data);
       } catch (err: any) {
@@ -129,20 +129,20 @@ export default function OrdersPage() {
           <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <ShoppingBag className="w-10 h-10 text-red-600" />
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Có lỗi xảy ra</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">CÃ³ lá»—i xáº£y ra</h2>
           <p className="text-gray-600 mb-6">{error}</p>
           <div className="flex gap-3 justify-center">
             <button
               onClick={() => window.location.reload()}
               className="bg-red-600 text-white px-6 py-3 rounded-xl hover:bg-red-700 transition-colors duration-200 font-medium"
             >
-              Thử lại
+              Thá»­ láº¡i
             </button>
             <button
               onClick={() => router.push('/shop')}
               className="bg-gray-600 text-white px-6 py-3 rounded-xl hover:bg-gray-700 transition-colors duration-200 font-medium"
             >
-              Mua sắm
+              Mua sáº¯m
             </button>
           </div>
         </div>
@@ -169,13 +169,13 @@ export default function OrdersPage() {
               <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
                 <ShoppingBag className="w-6 h-6 text-blue-600" />
               </div>
-              Lịch sử đơn hàng
+              Lá»‹ch sá»­ Ä‘Æ¡n hÃ ng
             </h1>
-            <p className="text-gray-600 mt-2">Theo dõi và quản lý đơn hàng của bạn</p>
+            <p className="text-gray-600 mt-2">Theo dÃµi vÃ  quáº£n lÃ½ Ä‘Æ¡n hÃ ng cá»§a báº¡n</p>
           </div>
           <div className="flex items-center gap-3">
             <span className="text-sm text-gray-500 bg-white px-3 py-2 rounded-xl border border-gray-200">
-              {filteredOrders.length} đơn hàng
+              {filteredOrders.length} Ä‘Æ¡n hÃ ng
             </span>
           </div>
         </div>
@@ -184,27 +184,27 @@ export default function OrdersPage() {
         <div className="grid grid-cols-2 lg:grid-cols-6 gap-4 mb-8">
           <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-200">
             <div className="text-2xl font-bold text-gray-900">{statusCounts.all}</div>
-            <div className="text-sm text-gray-500">Tổng đơn</div>
+            <div className="text-sm text-gray-500">Tá»•ng Ä‘Æ¡n</div>
           </div>
           <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-200">
             <div className="text-2xl font-bold text-yellow-600">{statusCounts.Pending}</div>
-            <div className="text-sm text-gray-500">Chờ xử lý</div>
+            <div className="text-sm text-gray-500">Chá» xá»­ lÃ½</div>
           </div>
           <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-200">
             <div className="text-2xl font-bold text-blue-600">{statusCounts.Processing}</div>
-            <div className="text-sm text-gray-500">Đang xử lý</div>
+            <div className="text-sm text-gray-500">Äang xá»­ lÃ½</div>
           </div>
           <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-200">
             <div className="text-2xl font-bold text-purple-600">{statusCounts.Shipped}</div>
-            <div className="text-sm text-gray-500">Đang giao</div>
+            <div className="text-sm text-gray-500">Äang giao</div>
           </div>
           <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-200">
             <div className="text-2xl font-bold text-green-600">{statusCounts.Completed}</div>
-            <div className="text-sm text-gray-500">Hoàn thành</div>
+            <div className="text-sm text-gray-500">HoÃ n thÃ nh</div>
           </div>
           <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-200">
             <div className="text-2xl font-bold text-red-600">{statusCounts.Cancelled}</div>
-            <div className="text-sm text-gray-500">Đã hủy</div>
+            <div className="text-sm text-gray-500">ÄÃ£ há»§y</div>
           </div>
         </div>
 
@@ -215,7 +215,7 @@ export default function OrdersPage() {
               <Search className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
               <input
                 type="text"
-                placeholder="Tìm kiếm theo mã đơn hàng hoặc tên sản phẩm..."
+                placeholder="TÃ¬m kiáº¿m theo mÃ£ Ä‘Æ¡n hÃ ng hoáº·c tÃªn sáº£n pháº©m..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -227,12 +227,12 @@ export default function OrdersPage() {
                 onChange={(e) => setStatusFilter(e.target.value)}
                 className="px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
-                <option value="all">Tất cả trạng thái</option>
-                <option value="Pending">Chờ xử lý</option>
-                <option value="Processing">Đang xử lý</option>
-                <option value="Shipped">Đang giao</option>
-                <option value="Completed">Hoàn thành</option>
-                <option value="Cancelled">Đã hủy</option>
+                <option value="all">Táº¥t cáº£ tráº¡ng thÃ¡i</option>
+                <option value="Pending">Chá» xá»­ lÃ½</option>
+                <option value="Processing">Äang xá»­ lÃ½</option>
+                <option value="Shipped">Äang giao</option>
+                <option value="Completed">HoÃ n thÃ nh</option>
+                <option value="Cancelled">ÄÃ£ há»§y</option>
               </select>
             </div>
           </div>
@@ -244,18 +244,18 @@ export default function OrdersPage() {
             <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
               <PackageOpen className="w-12 h-12 text-gray-400" />
             </div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-3">Chưa có đơn hàng nào</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-3">ChÆ°a cÃ³ Ä‘Æ¡n hÃ ng nÃ o</h2>
             <p className="text-gray-600 mb-8 max-w-md mx-auto text-lg">
               {searchTerm || statusFilter !== 'all' 
-                ? 'Không tìm thấy đơn hàng phù hợp với bộ lọc của bạn.'
-                : 'Hãy bắt đầu mua sắm và trải nghiệm dịch vụ của chúng tôi!'
+                ? 'KhÃ´ng tÃ¬m tháº¥y Ä‘Æ¡n hÃ ng phÃ¹ há»£p vá»›i bá»™ lá»c cá»§a báº¡n.'
+                : 'HÃ£y báº¯t Ä‘áº§u mua sáº¯m vÃ  tráº£i nghiá»‡m dá»‹ch vá»¥ cá»§a chÃºng tÃ´i!'
               }
             </p>
             <button
               onClick={() => router.push('/shop')}
               className="bg-blue-600 text-white px-8 py-4 rounded-xl font-semibold hover:bg-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl"
             >
-              Mua sắm ngay
+              Mua sáº¯m ngay
             </button>
           </div>
         ) : (
@@ -272,11 +272,11 @@ export default function OrdersPage() {
                       <div className="flex items-center gap-3">
                         {getStatusIcon(order.status)}
                         <span className={`text-sm font-medium px-3 py-1 rounded-full border ${getStatusColor(order.status)}`}>
-                          {order.status === 'Pending' && 'Chờ xử lý'}
-                          {order.status === 'Processing' && 'Đang xử lý'}
-                          {order.status === 'Shipped' && 'Đang giao hàng'}
-                          {order.status === 'Completed' && 'Hoàn thành'}
-                          {order.status === 'Cancelled' && 'Đã hủy'}
+                          {order.status === 'Pending' && 'Chá» xá»­ lÃ½'}
+                          {order.status === 'Processing' && 'Äang xá»­ lÃ½'}
+                          {order.status === 'Shipped' && 'Äang giao hÃ ng'}
+                          {order.status === 'Completed' && 'HoÃ n thÃ nh'}
+                          {order.status === 'Cancelled' && 'ÄÃ£ há»§y'}
                         </span>
                       </div>
                       <span className="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-lg">
@@ -285,7 +285,7 @@ export default function OrdersPage() {
                     </div>
                     <div className="text-right">
                       <p className="text-2xl font-bold text-blue-600">
-                        {order.totalAmount.toLocaleString()}₫
+                        {order.totalAmount.toLocaleString()}â‚«
                       </p>
                     </div>
                   </div>
@@ -295,7 +295,7 @@ export default function OrdersPage() {
                     <div className="flex items-center gap-3">
                       <Calendar className="w-5 h-5 text-gray-400" />
                       <div>
-                        <p className="text-sm text-gray-500">Ngày đặt</p>
+                        <p className="text-sm text-gray-500">NgÃ y Ä‘áº·t</p>
                         <p className="font-medium text-gray-900">
                           {new Date(order.orderDate).toLocaleDateString('vi-VN')}
                         </p>
@@ -304,9 +304,9 @@ export default function OrdersPage() {
                     <div className="flex items-center gap-3">
                       <Package className="w-5 h-5 text-gray-400" />
                       <div>
-                        <p className="text-sm text-gray-500">Sản phẩm</p>
+                        <p className="text-sm text-gray-500">Sáº£n pháº©m</p>
                         <p className="font-medium text-gray-900">
-                          {/* {Array.isArray(order.Items) ? order.Items.length : 0} sản phẩm */}
+                          {/* {Array.isArray(order.Items) ? order.Items.length : 0} sáº£n pháº©m */}
                           {order.items?.length || ''}
                         </p>
                       </div>
@@ -314,8 +314,8 @@ export default function OrdersPage() {
                     <div className="flex items-center gap-3">
                       <Truck className="w-5 h-5 text-gray-400" />
                       <div>
-                        <p className="text-sm text-gray-500">Phương thức</p>
-                        <p className="font-medium text-gray-900">Giao hàng tiêu chuẩn</p>
+                        <p className="text-sm text-gray-500">PhÆ°Æ¡ng thá»©c</p>
+                        <p className="font-medium text-gray-900">Giao hÃ ng tiÃªu chuáº©n</p>
                       </div>
                     </div>
                   </div>
@@ -333,7 +333,7 @@ export default function OrdersPage() {
                           {item.product?.name}
                         </p>
                         <p className="text-gray-500 text-sm">
-                          Số lượng: {item.quantity} × {item.price?.toLocaleString()}₫
+                          Sá»‘ lÆ°á»£ng: {item.quantity} Ã— {item.price?.toLocaleString()}â‚«
                         </p>
                       </div>
                     </div>
@@ -341,20 +341,20 @@ export default function OrdersPage() {
 
                   {order.items?.length > 3 && (
                     <div className="text-center text-sm text-gray-500 mt-3">
-                      +{order.items.length - 3} sản phẩm khác
+                      +{order.items.length - 3} sáº£n pháº©m khÃ¡c
                     </div>
                   )}
 
                   {/* Action */}
                   <div className="flex justify-between items-center mt-6 pt-4 border-t border-gray-100">
                     <div className="text-sm text-gray-500">
-                      Cập nhật lúc: {new Date(order.updatedAt || order.orderDate).toLocaleString('vi-VN')}
+                      Cáº­p nháº­t lÃºc: {new Date(order.updatedAt || order.orderDate).toLocaleString('vi-VN')}
                     </div>
                     <Link
                       href={`/orders/${order.orderId}`}
                       className="inline-flex items-center gap-2 bg-blue-600 text-white px-6 py-2 rounded-xl hover:bg-blue-700 transition-colors duration-200 font-medium group"
                     >
-                      Xem chi tiết
+                      Xem chi tiáº¿t
                       <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                     </Link>
                   </div>
@@ -367,3 +367,4 @@ export default function OrdersPage() {
     </div>
   );
 }
+

@@ -12,10 +12,10 @@ namespace Services
             _context = context;
         }
 
-        public async Task<User> CreateUserAsync(CreateUserRequest request)
+        public async Task<UserDto> CreateUserAsync(CreateUserRequest request)
         {
             if (await _context.Users.AnyAsync(u => u.Username == request.Username))
-                throw new ArgumentException("Username đã tồn tại.");
+                throw new ArgumentException("Username already exists.");
 
             var user = new User
             {
@@ -24,30 +24,32 @@ namespace Services
                 FullName = request.FullName,
                 Role = "nhanvien",
                 Phone = request.Phone,
-                Email = request.Email + "@gmail.com",
+                Email = request.Email,
                 IsActive = true
             };
 
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
-            return user;
+            return UserDto.FromUser(user);
         }
 
-        public async Task<IEnumerable<User>> GetUsersAsync()
+        public async Task<IEnumerable<UserDto>> GetUsersAsync()
         {
-            return await _context.Users.ToListAsync();
+            var users = await _context.Users.AsNoTracking().ToListAsync();
+            return users.Select(UserDto.FromUser);
         }
 
-        public async Task<User?> GetUserByIdAsync(int id)
+        public async Task<UserDto?> GetUserByIdAsync(int id)
         {
-            return await _context.Users.FindAsync(id);
+            var user = await _context.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Id == id);
+            return user == null ? null : UserDto.FromUser(user);
         }
 
-        public async Task<User> RegisterAsync(CreateUserRequest request)
+        public async Task<UserDto> RegisterAsync(CreateUserRequest request)
         {
             var userExists = await _context.Users.AnyAsync(u => u.Username == request.Username || u.Email == request.Email);
             if (userExists)
-                throw new ArgumentException("Tên người dùng hoặc email đã tồn tại");
+                throw new ArgumentException("Username or email already exists.");
 
             var user = new User
             {
@@ -62,8 +64,7 @@ namespace Services
 
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
-            return user;
+            return UserDto.FromUser(user);
         }
     }
 }
-

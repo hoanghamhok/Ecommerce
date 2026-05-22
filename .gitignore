@@ -1,5 +1,6 @@
 ecommerce-frontend/node_modules
 ecommerce-frontend/.next
+ecommerce-frontend/.env.local
 
 EcommerceBackend/bin/
 EcommerceBackend/obj/

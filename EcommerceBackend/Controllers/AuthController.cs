@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Mvc;
 using Services;
+using System.Security.Claims;
 
 [ApiController]
 [Route("api/auth")]
@@ -15,19 +16,11 @@ public class AuthController : Controller
         _authService = authService;
     }
 
-    //API đăng nhập
     [HttpPost("login")]
     public async Task<ActionResult> Login([FromBody] LoginRequest request)
     {
-        try
-        {
-            var result = await _authService.LoginAsync(request.Username, request.Password);
-            return Ok(new { Token = result.Token, User = result.User });
-        }
-        catch (UnauthorizedAccessException ex)
-        {
-            return Unauthorized(new { title = ex.Message });
-        }
+        var result = await _authService.LoginAsync(request.Username, request.Password);
+        return Ok(new { token = result.Token, user = result.User });
     }
 
     [HttpGet("google-login")]
@@ -47,13 +40,12 @@ public class AuthController : Controller
             return BadRequest("Google authentication failed.");
 
         var claims = authenticateResult.Principal.Identities.First().Claims.ToList();
-        var email = claims.FirstOrDefault(c => c.Type.Contains("email"))?.Value;
-        var name = claims.FirstOrDefault(c => c.Type.Contains("name"))?.Value;
+        var email = claims.FirstOrDefault(c => c.Type == ClaimTypes.Email || c.Type.Contains("email"))?.Value;
+        var name = claims.FirstOrDefault(c => c.Type == ClaimTypes.Name || c.Type.Contains("name"))?.Value;
 
-        var token = await _authService.GenerateJwtTokenFromGoogleAsync(email!, name!);
+        var result = await _authService.GenerateJwtTokenFromGoogleAsync(email!, name ?? email!);
 
-        var frontendUrl = $"http://localhost:3000/auth/callback?token={token}";
+        var frontendUrl = $"http://localhost:3000/auth/callback?token={result.Token}";
         return Redirect(frontendUrl);
     }
 }
-

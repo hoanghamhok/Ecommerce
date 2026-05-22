@@ -305,14 +305,14 @@ function MarkdownBubble({
         {...p}
       />
     ),
-    code: ({ inline, children, ...p }) =>
-      inline ? (
+    code: ({ children, className, ...p }) =>
+      !className ? (
         <code className="px-1 py-0.5 rounded bg-black/10 text-xs" {...p}>
           {children}
         </code>
       ) : (
         <pre className="text-xs p-3 rounded bg-black/10 overflow-x-auto mb-1 last:mb-0">
-          <code {...p}>{children}</code>
+          <code className={className} {...p}>{children}</code>
         </pre>
       ),
     a: (p) => (

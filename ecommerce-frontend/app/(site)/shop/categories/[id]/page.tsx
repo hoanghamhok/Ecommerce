@@ -1,3 +1,4 @@
+﻿const API_BASE = process.env.NEXT_PUBLIC_API_BASE ?? 'http://localhost:5091';
 import Link from "next/link";
 
 type Product = {
@@ -17,21 +18,21 @@ type Category = {
 export default async function ProductsByCategoryPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  const categoryId = params.id;
+  const { id: categoryId } = await params;
 
   // Fetch category and products in parallel
   const [categoryRes, productsRes] = await Promise.all([
-    fetch(`http://localhost:5091/api/categories/${categoryId}`, { cache: "no-store" }),
-    fetch(`http://localhost:5091/api/products/categories/${categoryId}`, { cache: "no-store" }),
+    fetch(`${API_BASE}/api/categories/${categoryId}`, { cache: "no-store" }),
+    fetch(`${API_BASE}/api/products/categories/${categoryId}`, { cache: "no-store" }),
   ]);
 
   if (!categoryRes.ok || !productsRes.ok) {
     return (
       <div className="min-h-[40vh] flex items-center justify-center">
         <div className="bg-red-50 border border-red-200 text-red-600 px-8 py-6 rounded-2xl shadow text-center text-lg font-semibold">
-          Không thể tải dữ liệu. Vui lòng thử lại sau.
+          KhÃ´ng thá»ƒ táº£i dá»¯ liá»‡u. Vui lÃ²ng thá»­ láº¡i sau.
         </div>
       </div>
     );
@@ -47,7 +48,7 @@ export default async function ProductsByCategoryPage({
         <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-10 gap-4">
           <div>
             <h1 className="text-4xl md:text-5xl font-black text-slate-900 mb-2">
-              Danh mục: {category.name}
+              Danh má»¥c: {category.name}
             </h1>
             {category.description && (
               <p className="text-slate-600 text-lg">{category.description}</p>
@@ -55,10 +56,10 @@ export default async function ProductsByCategoryPage({
           </div>
           <div className="flex items-center space-x-3">
             <span className="bg-emerald-100 text-emerald-600 px-4 py-2 rounded-full font-semibold text-sm shadow">
-              {products.length} sản phẩm
+              {products.length} sáº£n pháº©m
             </span>
             <span className="text-slate-400 text-xs">
-              Cập nhật: {new Date(category.createdAt).toLocaleDateString()}
+              Cáº­p nháº­t: {new Date(category.createdAt).toLocaleDateString()}
             </span>
           </div>
         </div>
@@ -71,13 +72,13 @@ export default async function ProductsByCategoryPage({
                 <path stroke="currentColor" strokeWidth={2} d="M9 17v-2a4 4 0 018 0v2M7 10a5 5 0 1110 0 5 5 0 01-10 0z" />
               </svg>
             </div>
-            <h2 className="text-2xl font-bold text-slate-800 mb-2">Chưa có sản phẩm nào</h2>
-            <p className="text-slate-500 mb-6">Hãy quay lại sau hoặc chọn danh mục khác để khám phá thêm sản phẩm!</p>
+            <h2 className="text-2xl font-bold text-slate-800 mb-2">ChÆ°a cÃ³ sáº£n pháº©m nÃ o</h2>
+            <p className="text-slate-500 mb-6">HÃ£y quay láº¡i sau hoáº·c chá»n danh má»¥c khÃ¡c Ä‘á»ƒ khÃ¡m phÃ¡ thÃªm sáº£n pháº©m!</p>
             <Link
               href="/shop"
               className="inline-flex items-center bg-gradient-to-r from-blue-500 to-emerald-400 text-white px-6 py-3 rounded-xl font-semibold hover:from-blue-600 hover:to-emerald-500 transition-all duration-200 shadow-lg"
             >
-              Quay lại cửa hàng
+              Quay láº¡i cá»­a hÃ ng
             </Link>
           </div>
         ) : (
@@ -104,7 +105,7 @@ export default async function ProductsByCategoryPage({
                   </h2>
                   <div className="mb-4">
                     <span className="text-emerald-600 font-bold text-xl">
-                      {product.price.toLocaleString()}₫
+                      {product.price.toLocaleString()}â‚«
                     </span>
                   </div>
                   <div className="mt-auto">
@@ -112,7 +113,7 @@ export default async function ProductsByCategoryPage({
                       href={`/shop/product/${product.id}`}
                       className="inline-block w-full bg-gradient-to-r from-blue-500 to-emerald-400 text-white text-center py-3 rounded-xl font-semibold hover:from-blue-600 hover:to-emerald-500 transition-all duration-200 shadow hover:shadow-lg"
                     >
-                      Xem chi tiết
+                      Xem chi tiáº¿t
                     </Link>
                   </div>
                 </div>
@@ -124,3 +125,4 @@ export default async function ProductsByCategoryPage({
     </div>
   );
 }
+

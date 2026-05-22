@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useEffect, useMemo, useState } from 'react';
 import {
@@ -7,7 +7,7 @@ import {
 } from 'recharts';
 
 /* =================== CONFIG =================== */
-const API_BASE = 'http://localhost:5091';
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE ?? 'http://localhost:5091';
 
 /* =================== FETCHERS =================== */
 async function fetchOrders() {
@@ -21,7 +21,7 @@ async function fetchUsers() {
   return res.json();
 }
 
-/* =================== DATE HELPERS (an toàn) =================== */
+/* =================== DATE HELPERS (an toÃ n) =================== */
 function toDateSafe(v: any): Date | null {
   if (!v && v !== 0) return null;
   if (v instanceof Date) return isNaN(+v) ? null : v;
@@ -32,7 +32,7 @@ function toDateSafe(v: any): Date | null {
   if (typeof v === 'string') {
     const d = new Date(v);
     if (!isNaN(+d)) return d;
-    const m = v.match(/\/Date\((\d+)\)\//); // .NET kiểu cũ
+    const m = v.match(/\/Date\((\d+)\)\//); // .NET kiá»ƒu cÅ©
     if (m) {
       const d2 = new Date(Number(m[1]));
       return isNaN(+d2) ? null : d2;
@@ -56,7 +56,7 @@ function lastNMonths(n = 6): string[] {
 }
 
 /* =================== AGG UTILS =================== */
-// Đếm theo tháng
+// Äáº¿m theo thÃ¡ng
 function groupMonthlyCount<T>(items: T[], getDate: (x: T) => any) {
   const map = new Map<string, number>();
   for (const it of items) {
@@ -69,11 +69,11 @@ function groupMonthlyCount<T>(items: T[], getDate: (x: T) => any) {
     .map(([month, count]) => ({ month, count }));
 }
 
-// Doanh thu theo tháng: SUM(orderDetails.quantity * price)
+// Doanh thu theo thÃ¡ng: SUM(orderDetails.quantity * price)
 function revenueMonthlyFromDetails(orders: any[]) {
   const map = new Map<string, number>();
   for (const o of orders) {
-    // API thực tế: createdAt
+    // API thá»±c táº¿: createdAt
     const key = fmtMonthSafe(o.createdAt ?? o.CreatedAt);
     if (!key) continue;
 
@@ -98,14 +98,14 @@ function ensureMonths<T extends { month: string }>(data: T[], months: string[], 
 
 /* =================== PIE DATA =================== */
 function buildPieFromOrders(orders: any[]) {
-  // Với dữ liệu thật: có orderDetails -> pie theo sản phẩm (tổng quantity)
+  // Vá»›i dá»¯ liá»‡u tháº­t: cÃ³ orderDetails -> pie theo sáº£n pháº©m (tá»•ng quantity)
   const hasDetails = orders.some(o => o.orderDetails || o.OrderDetails);
   if (hasDetails) {
     const byProduct = new Map<string, number>();
     for (const o of orders) {
       const details = (o.orderDetails ?? o.OrderDetails) || [];
       for (const d of details) {
-        const name = d.productName ?? d.ProductName ?? 'Khác';
+        const name = d.productName ?? d.ProductName ?? 'KhÃ¡c';
         const qty = Number(d.quantity ?? d.Quantity ?? 0);
         byProduct.set(name, (byProduct.get(name) ?? 0) + (isFinite(qty) ? qty : 0));
       }
@@ -113,8 +113,8 @@ function buildPieFromOrders(orders: any[]) {
     const arr = Array.from(byProduct.entries()).map(([name, value]) => ({ name, value }));
     if (arr.length) return arr;
   }
-  // fallback theo số đơn (vì không có status trong API mẫu)
-  const arr = [{ name: 'Số đơn', value: orders.length || 1 }];
+  // fallback theo sá»‘ Ä‘Æ¡n (vÃ¬ khÃ´ng cÃ³ status trong API máº«u)
+  const arr = [{ name: 'Sá»‘ Ä‘Æ¡n', value: orders.length || 1 }];
   return arr;
 }
 
@@ -138,20 +138,20 @@ export default function Dashboard() {
 
         if (ordersRes.status === 'fulfilled') {
           const raw = ordersRes.value ?? [];
-          // Chuẩn hoá: dùng createdAt & orderDetails
+          // Chuáº©n hoÃ¡: dÃ¹ng createdAt & orderDetails
           const normalized = raw.map((o: any) => ({
             orderId: o.orderId ?? o.id ?? o.OrderId,
-            createdAt: o.createdAt ?? o.CreatedAt, // <- API thật
+            createdAt: o.createdAt ?? o.CreatedAt, // <- API tháº­t
             orderDetails: o.orderDetails ?? o.OrderDetails ?? [],
           }));
           setOrders(normalized);
         } else {
-          console.error('Fetch orders lỗi:', ordersRes.reason);
+          console.error('Fetch orders lá»—i:', ordersRes.reason);
         }
 
         if (usersRes.status === 'fulfilled') {
           const raw = usersRes.value ?? [];
-          // Users thật có "creatAt" (typo), nên lấy creatAt trước
+          // Users tháº­t cÃ³ "creatAt" (typo), nÃªn láº¥y creatAt trÆ°á»›c
           const normalized = raw
             .map((u: any) => ({
               id: u.id ?? u.Id,
@@ -160,12 +160,12 @@ export default function Dashboard() {
             .filter((x: any) => !!x.createdAt);
           setUsers(normalized);
         } else {
-          console.error('Fetch users lỗi:', usersRes.reason);
+          console.error('Fetch users lá»—i:', usersRes.reason);
         }
 
         if (ordersRes.status === 'rejected' || usersRes.status === 'rejected') {
           setError(
-            `Không lấy được: ${[
+            `KhÃ´ng láº¥y Ä‘Æ°á»£c: ${[
               ordersRes.status === 'rejected' ? 'orders' : null,
               usersRes.status === 'rejected' ? 'users' : null,
             ].filter(Boolean).join(', ')}`
@@ -181,7 +181,7 @@ export default function Dashboard() {
   /* ========== KPI ========== */
   const totalUsers = users.length;
   const totalOrders = orders.length;
-  // Doanh thu tổng = sum(details.qty * price)
+  // Doanh thu tá»•ng = sum(details.qty * price)
   const totalRevenue = orders.reduce((sum, o) => {
     const details = o.orderDetails || [];
     const r = details.reduce((s: number, d: any) => {
@@ -194,9 +194,9 @@ export default function Dashboard() {
 
   /* ========== Charts data ========== */
   const months = useMemo(() => lastNMonths(6), []);
-  // Users theo tháng: dùng createdAt (đÃ normalize từ creatAt)
+  // Users theo thÃ¡ng: dÃ¹ng createdAt (Ä‘Ãƒ normalize tá»« creatAt)
   const usersMonthlyRaw = useMemo(() => groupMonthlyCount(users, u => u.createdAt), [users]);
-  // Revenue theo tháng: từ orderDetails & createdAt
+  // Revenue theo thÃ¡ng: tá»« orderDetails & createdAt
   const revenueMonthlyRaw = useMemo(() => revenueMonthlyFromDetails(orders), [orders]);
 
   const usersMonthly = useMemo(
@@ -208,7 +208,7 @@ export default function Dashboard() {
     [revenueMonthlyRaw, months]
   );
 
-  // Gộp dữ liệu cho 2 chart (Line users + Bar revenue)
+  // Gá»™p dá»¯ liá»‡u cho 2 chart (Line users + Bar revenue)
   const comboData = useMemo(() => {
     const mapUsers = new Map(usersMonthly.map(d => [d.month, d.count]));
     const mapRev = new Map(revenueMonthly.map(d => [d.month, d.revenue]));
@@ -219,37 +219,37 @@ export default function Dashboard() {
     }));
   }, [months, usersMonthly, revenueMonthly]);
 
-  // Pie theo sản phẩm
+  // Pie theo sáº£n pháº©m
   const pieData = useMemo(() => buildPieFromOrders(orders), [orders]);
 
   if (loading) {
     return (
       <div className="pt-24 pl-72 pr-6 pb-6 min-h-screen bg-gray-50">
-        <div className="bg-white rounded-xl p-6 shadow-sm">Đang tải dữ liệu dashboard…</div>
+        <div className="bg-white rounded-xl p-6 shadow-sm">Äang táº£i dá»¯ liá»‡u dashboardâ€¦</div>
       </div>
     );
   }
 
   return (
     <div className="pt-24 pl-72 pr-6 pb-6 min-h-screen bg-gray-50 font-sans">
-      <h1 className="text-2xl font-bold text-gray-800 mb-6">📊 Trang Dashboard</h1>
+      <h1 className="text-2xl font-bold text-gray-800 mb-6">ðŸ“Š Trang Dashboard</h1>
 
       {/* Cards (KPI) */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         <div className="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition">
-          <h2 className="text-gray-700 font-semibold mb-2">👥 Người dùng</h2>
+          <h2 className="text-gray-700 font-semibold mb-2">ðŸ‘¥ NgÆ°á»i dÃ¹ng</h2>
           <p className="text-3xl font-extrabold text-blue-600">{totalUsers.toLocaleString('vi-VN')}</p>
-          <p className="text-xs text-gray-500 mt-1">Tháng gần nhất: +{usersMonthly.at(-1)?.count ?? 0}</p>
+          <p className="text-xs text-gray-500 mt-1">ThÃ¡ng gáº§n nháº¥t: +{usersMonthly.at(-1)?.count ?? 0}</p>
         </div>
         <div className="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition">
-          <h2 className="text-gray-700 font-semibold mb-2">🛒 Đơn hàng</h2>
+          <h2 className="text-gray-700 font-semibold mb-2">ðŸ›’ ÄÆ¡n hÃ ng</h2>
           <p className="text-3xl font-extrabold text-green-600">{totalOrders.toLocaleString('vi-VN')}</p>
-          <p className="text-xs text-gray-500 mt-1">TB/tháng: {(totalOrders / Math.max(1, months.length)).toFixed(1)}</p>
+          <p className="text-xs text-gray-500 mt-1">TB/thÃ¡ng: {(totalOrders / Math.max(1, months.length)).toFixed(1)}</p>
         </div>
         <div className="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition">
-          <h2 className="text-gray-700 font-semibold mb-2">💰 Doanh thu</h2>
+          <h2 className="text-gray-700 font-semibold mb-2">ðŸ’° Doanh thu</h2>
           <p className="text-3xl font-extrabold text-orange-500">{currencyVN(totalRevenue)}</p>
-          <p className="text-xs text-gray-500 mt-1">Tháng gần nhất: {currencyVN(Number(revenueMonthly.at(-1)?.revenue ?? 0))}</p>
+          <p className="text-xs text-gray-500 mt-1">ThÃ¡ng gáº§n nháº¥t: {currencyVN(Number(revenueMonthly.at(-1)?.revenue ?? 0))}</p>
         </div>
       </div>
 
@@ -257,22 +257,22 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Line Chart: Users */}
         <div className="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition">
-          <h2 className="text-lg font-semibold text-gray-700 mb-4">Thống kê người dùng theo tháng</h2>
+          <h2 className="text-lg font-semibold text-gray-700 mb-4">Thá»‘ng kÃª ngÆ°á»i dÃ¹ng theo thÃ¡ng</h2>
           <ResponsiveContainer width="100%" height={260}>
             <LineChart data={comboData}>
               <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
               <XAxis dataKey="name" />
               <YAxis />
-              <Tooltip formatter={(v: any, name) => [v, name === 'users' ? 'Người dùng' : '']} />
+              <Tooltip formatter={(v: any, name) => [v, name === 'users' ? 'NgÆ°á»i dÃ¹ng' : '']} />
               <Legend />
-              <Line type="monotone" dataKey="users" name="Người dùng" stroke="#6366F1" strokeWidth={2} activeDot={{ r: 6 }} />
+              <Line type="monotone" dataKey="users" name="NgÆ°á»i dÃ¹ng" stroke="#6366F1" strokeWidth={2} activeDot={{ r: 6 }} />
             </LineChart>
           </ResponsiveContainer>
         </div>
 
         {/* Bar Chart: Revenue by month */}
         <div className="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition">
-          <h2 className="text-lg font-semibold text-gray-700 mb-4">Doanh thu theo tháng</h2>
+          <h2 className="text-lg font-semibold text-gray-700 mb-4">Doanh thu theo thÃ¡ng</h2>
           <ResponsiveContainer width="100%" height={260}>
             <BarChart data={comboData}>
               <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
@@ -288,7 +288,7 @@ export default function Dashboard() {
         {/* Pie Chart */}
         <div className="col-span-1 lg:col-span-2 bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition">
           <h2 className="text-lg font-semibold text-gray-700 mb-4">
-            Tỉ lệ bán theo sản phẩm
+            Tá»‰ lá»‡ bÃ¡n theo sáº£n pháº©m
           </h2>
           <ResponsiveContainer width="100%" height={320}>
             <PieChart>
@@ -305,7 +305,7 @@ export default function Dashboard() {
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
-              <Tooltip formatter={(v: any) => [v, 'Số lượng']} />
+              <Tooltip formatter={(v: any) => [v, 'Sá»‘ lÆ°á»£ng']} />
               <Legend />
             </PieChart>
           </ResponsiveContainer>
@@ -320,3 +320,5 @@ export default function Dashboard() {
     </div>
   );
 }
+
+

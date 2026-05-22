@@ -61,9 +61,10 @@ function getPostById(id: number) {
 export default async function BlogDetailPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  const postId = Number(params.id);
+  const { id } = await params;
+  const postId = Number(id);
   const post = await getPostById(postId); // nếu là async
 
 

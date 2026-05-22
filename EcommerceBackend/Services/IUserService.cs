@@ -4,10 +4,10 @@ namespace Services
 {
     public interface IUserService
     {
-        Task<User> CreateUserAsync(CreateUserRequest request);
-        Task<IEnumerable<User>> GetUsersAsync();
-        Task<User?> GetUserByIdAsync(int id);
-        Task<User> RegisterAsync(CreateUserRequest request);
+        Task<UserDto> CreateUserAsync(CreateUserRequest request);
+        Task<IEnumerable<UserDto>> GetUsersAsync();
+        Task<UserDto?> GetUserByIdAsync(int id);
+        Task<UserDto> RegisterAsync(CreateUserRequest request);
     }
 
     public class CreateUserRequest

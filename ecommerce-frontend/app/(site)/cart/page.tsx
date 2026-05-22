@@ -1,4 +1,6 @@
-'use client';
+﻿'use client';
+
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE ?? 'http://localhost:5091';
 import { useEffect, useState } from "react";   
 import { fetchCart, updateCartItem,removeCartItem } from "../../../services/api";
 import { useRouter } from 'next/navigation';
@@ -34,7 +36,7 @@ export default function CartPage() {
     const goCheckout = () => {
     router.push('/checkout');
     }
-    // Hàm lấy danh sách sản phẩm trong giỏ hàng
+    // HÃ m láº¥y danh sÃ¡ch sáº£n pháº©m trong giá» hÃ ng
     useEffect(() => {
         const loadCart = async () => {
             try {
@@ -44,7 +46,7 @@ export default function CartPage() {
                 setCartItems(data);
                 calculateTotal(data);
             } catch (err) {
-                setError("Lỗi khi tải giỏ hàng. Vui lòng thử lại sau.");
+                setError("Lá»—i khi táº£i giá» hÃ ng. Vui lÃ²ng thá»­ láº¡i sau.");
             } finally {
                 setLoading(false);
             }
@@ -79,7 +81,7 @@ export default function CartPage() {
             );
             calculateTotal(updatedItems);
         } catch (err) {
-            console.error("Lỗi khi cập nhật số lượng:", err);
+            console.error("Lá»—i khi cáº­p nháº­t sá»‘ lÆ°á»£ng:", err);
         }
     };
 
@@ -94,7 +96,7 @@ export default function CartPage() {
                 return updatedItems;
             });
         } catch (err) {
-            console.error("Lỗi khi xóa sản phẩm:", err);
+            console.error("Lá»—i khi xÃ³a sáº£n pháº©m:", err);
         } finally {
             setRemovingItems(prev => {
                 const newSet = new Set(prev);
@@ -118,7 +120,7 @@ export default function CartPage() {
             const token = localStorage.getItem("token");
 
             if (paymentMethod === "momo") {
-            const response = await fetch("http://localhost:5091/api/cart/checkout-momo", {
+            const response = await fetch(`${API_BASE}/api/cart/checkout-momo`, {
                 method: "POST",
                 headers: {
                 "Content-Type": "application/json",
@@ -128,12 +130,12 @@ export default function CartPage() {
             });
 
             if (!response.ok) {
-                throw new Error("Thanh toán MoMo thất bại");
+                throw new Error("Thanh toÃ¡n MoMo tháº¥t báº¡i");
             }
 
             const data = await response.json();
 
-            // Nếu server trả về url từ MoMo
+            // Náº¿u server tráº£ vá» url tá»« MoMo
             if (data.url) {
                 window.location.href = data.url;
                 return;
@@ -143,7 +145,7 @@ export default function CartPage() {
             }
 
             else if (paymentMethod === "cod") {
-            const res = await fetch("http://localhost:5091/api/Cart/checkout", {
+            const res = await fetch(`${API_BASE}/api/Cart/checkout`, {
                 method: "POST",
                 headers: {
                 Authorization: `Bearer ${token}`,
@@ -155,13 +157,13 @@ export default function CartPage() {
             if (!contentType || !contentType.includes("application/json")) {
                 const text = await res.text();
                 console.error("Unexpected response (not JSON):", text);
-                throw new Error("Server trả về định dạng không hợp lệ.");
+                throw new Error("Server tráº£ vá» Ä‘á»‹nh dáº¡ng khÃ´ng há»£p lá»‡.");
             }
 
             const data = await res.json();
 
             if (!res.ok) {
-                throw new Error(data.message || "Lỗi không xác định");
+                throw new Error(data.message || "Lá»—i khÃ´ng xÃ¡c Ä‘á»‹nh");
             }
 
             setShowSuccess({ visible: true, orderId: data.orderId });
@@ -171,11 +173,11 @@ export default function CartPage() {
             }
 
             else {
-            alert("Vui lòng chọn phương thức thanh toán");
+            alert("Vui lÃ²ng chá»n phÆ°Æ¡ng thá»©c thanh toÃ¡n");
             }
         } catch (error: any) {
             console.error("Checkout Error:", error);
-            alert("Lỗi khi thanh toán: " + error.message);
+            alert("Lá»—i khi thanh toÃ¡n: " + error.message);
         } finally {
             setIsCheckingOut(false);
         }
@@ -218,13 +220,13 @@ export default function CartPage() {
                     <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
                         <ShoppingCart className="w-8 h-8 text-red-600" />
                     </div>
-                    <h2 className="text-2xl font-bold text-slate-900 mb-2">Có lỗi xảy ra</h2>
+                    <h2 className="text-2xl font-bold text-slate-900 mb-2">CÃ³ lá»—i xáº£y ra</h2>
                     <p className="text-slate-600 mb-6">{error}</p>
                     <button 
                         onClick={() => window.location.reload()}
                         className="bg-red-600 text-white px-6 py-3 rounded-xl hover:bg-red-700 transition-colors duration-200"
                     >
-                        Thử lại
+                        Thá»­ láº¡i
                     </button>
                 </div>
             </div>
@@ -242,27 +244,27 @@ export default function CartPage() {
                             className="flex items-center space-x-2 text-slate-600 hover:text-emerald-600 transition-colors duration-200"
                         >
                             <ArrowLeft className="w-5 h-5" />
-                            <span>Tiếp tục mua sắm</span>
+                            <span>Tiáº¿p tá»¥c mua sáº¯m</span>
                         </Link>
                     </div>
                     <div className="text-right">
-                        <h1 className="text-3xl md:text-4xl font-bold text-slate-900">Giỏ hàng của bạn</h1>
-                        <p className="text-slate-600 mt-1">{cartItems.length} sản phẩm</p>
+                        <h1 className="text-3xl md:text-4xl font-bold text-slate-900">Giá» hÃ ng cá»§a báº¡n</h1>
+                        <p className="text-slate-600 mt-1">{cartItems.length} sáº£n pháº©m</p>
                     </div>
                 {showSuccess.visible && (
                     <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50">
                         <div className="flex items-center bg-white border border-emerald-200 shadow-xl rounded-2xl px-6 py-4 space-x-3 animate-fade-in">
                         <CheckCircle className="w-7 h-7 text-emerald-500" />
                         <div>
-                            <div className="font-bold text-emerald-700 text-lg">Thanh toán thành công!</div>
+                            <div className="font-bold text-emerald-700 text-lg">Thanh toÃ¡n thÃ nh cÃ´ng!</div>
                             <div className="text-slate-600 text-sm">
-                            Mã đơn hàng: <span className="font-semibold">{showSuccess.orderId}</span>
+                            MÃ£ Ä‘Æ¡n hÃ ng: <span className="font-semibold">{showSuccess.orderId}</span>
                             </div>
                         </div>
                         <button
                             className="ml-4 p-1 rounded hover:bg-slate-100"
                             onClick={() => setShowSuccess({ visible: false })}
-                            aria-label="Đóng"
+                            aria-label="ÄÃ³ng"
                         >
                             <X className="w-5 h-5 text-slate-400" />
                         </button>
@@ -286,16 +288,16 @@ export default function CartPage() {
                         <div className="w-32 h-32 bg-gradient-to-r from-emerald-100 to-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
                             <ShoppingBag className="w-16 h-16 text-slate-400" />
                         </div>
-                        <h2 className="text-2xl font-bold text-slate-900 mb-2">Giỏ hàng trống</h2>
+                        <h2 className="text-2xl font-bold text-slate-900 mb-2">Giá» hÃ ng trá»‘ng</h2>
                         <p className="text-slate-600 mb-8 max-w-md mx-auto">
-                            Bạn chưa có sản phẩm nào trong giỏ hàng. Hãy khám phá các sản phẩm tuyệt vời của chúng tôi!
+                            Báº¡n chÆ°a cÃ³ sáº£n pháº©m nÃ o trong giá» hÃ ng. HÃ£y khÃ¡m phÃ¡ cÃ¡c sáº£n pháº©m tuyá»‡t vá»i cá»§a chÃºng tÃ´i!
                         </p>
                         <Link
                             href="/shop"
                             className="inline-flex items-center space-x-2 bg-gradient-to-r from-emerald-500 to-blue-500 text-white px-8 py-4 rounded-2xl font-semibold hover:from-emerald-600 hover:to-blue-600 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
                         >
                             <ShoppingBag className="w-5 h-5" />
-                            <span>Bắt đầu mua sắm</span>
+                            <span>Báº¯t Ä‘áº§u mua sáº¯m</span>
                         </Link>
                     </div>
                 ) : (
@@ -376,10 +378,10 @@ export default function CartPage() {
                                                     {/* Price */}
                                                     <div className="text-right">
                                                         <p className="text-2xl font-bold text-emerald-600">
-                                                            {(item.product.price * item.quantity).toLocaleString()}₫
+                                                            {(item.product.price * item.quantity).toLocaleString()}â‚«
                                                         </p>
                                                         <p className="text-sm text-slate-500">
-                                                            {item.product.price.toLocaleString()}₫ / sản phẩm
+                                                            {item.product.price.toLocaleString()}â‚« / sáº£n pháº©m
                                                         </p>
                                                     </div>
                                                 </div>
@@ -394,32 +396,32 @@ export default function CartPage() {
                         <div className="space-y-6">
                             {/* Promo Code */}
                             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-                                <h3 className="text-lg font-semibold text-slate-900 mb-4">Mã giảm giá</h3>
+                                <h3 className="text-lg font-semibold text-slate-900 mb-4">MÃ£ giáº£m giÃ¡</h3>
                                 <div className="flex space-x-2">
                                     <input
                                         type="text"
                                         value={promoCode}
                                         onChange={(e) => setPromoCode(e.target.value)}
-                                        placeholder="Nhập mã giảm giá"
+                                        placeholder="Nháº­p mÃ£ giáº£m giÃ¡"
                                         className="flex-1 px-4 py-3 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent"
                                     />
                                     <button
                                         onClick={handleApplyPromo}
                                         className="px-6 py-3 bg-slate-900 text-white rounded-xl hover:bg-slate-800 transition-colors duration-200 font-semibold"
                                     >
-                                        Áp dụng
+                                        Ãp dá»¥ng
                                     </button>
                                 </div>
                                 {discount > 0 && (
                                     <div className="mt-3 flex items-center space-x-2 text-green-600">
                                         <CheckCircle className="w-4 h-4" />
-                                        <span className="text-sm">Giảm giá {discount.toLocaleString()}₫</span>
+                                        <span className="text-sm">Giáº£m giÃ¡ {discount.toLocaleString()}â‚«</span>
                                     </div>
                                 )}
                             </div>
                             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
                                 {/* Payment Method */}
-                            <h3 className="text-lg font-semibold text-slate-900 mb-4">Phương thức thanh toán</h3>
+                            <h3 className="text-lg font-semibold text-slate-900 mb-4">PhÆ°Æ¡ng thá»©c thanh toÃ¡n</h3>
                             <div className="space-y-3">
                                 <label className="flex items-center space-x-3">
                                 <input
@@ -430,7 +432,7 @@ export default function CartPage() {
                                     onChange={(e) => setPaymentMethod(e.target.value)}
                                     className="form-radio h-5 w-5 text-emerald-600"
                                 />
-                                <span className="text-slate-700">Thanh toán khi nhận hàng (COD)</span>
+                                <span className="text-slate-700">Thanh toÃ¡n khi nháº­n hÃ ng (COD)</span>
                                 </label>
 
                                 <label className="flex items-center space-x-3">
@@ -442,7 +444,7 @@ export default function CartPage() {
                                     onChange={(e) => setPaymentMethod(e.target.value)}
                                     className="form-radio h-5 w-5 text-emerald-600"
                                 />
-                                <span className="text-slate-700">Thanh toán qua Ví MoMo</span>
+                                <span className="text-slate-700">Thanh toÃ¡n qua VÃ­ MoMo</span>
                                 </label>
                             </div>
                             </div>
@@ -450,28 +452,28 @@ export default function CartPage() {
 
                             {/* Order Summary */}
                             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-                                <h3 className="text-lg font-semibold text-slate-900 mb-4">Tóm tắt đơn hàng</h3>
+                                <h3 className="text-lg font-semibold text-slate-900 mb-4">TÃ³m táº¯t Ä‘Æ¡n hÃ ng</h3>
                                 
                                 <div className="space-y-3 mb-4">
                                     <div className="flex justify-between">
-                                        <span className="text-slate-600">Tạm tính</span>
-                                        <span className="font-semibold">{(total + discount).toLocaleString()}₫</span>
+                                        <span className="text-slate-600">Táº¡m tÃ­nh</span>
+                                        <span className="font-semibold">{(total + discount).toLocaleString()}â‚«</span>
                                     </div>
                                     {discount > 0 && (
                                         <div className="flex justify-between text-green-600">
-                                            <span>Giảm giá</span>
-                                            <span>-{discount.toLocaleString()}₫</span>
+                                            <span>Giáº£m giÃ¡</span>
+                                            <span>-{discount.toLocaleString()}â‚«</span>
                                         </div>
                                     )}
                                     <div className="flex justify-between">
-                                        <span className="text-slate-600">Phí vận chuyển</span>
-                                        <span className="font-semibold text-green-600">Miễn phí</span>
+                                        <span className="text-slate-600">PhÃ­ váº­n chuyá»ƒn</span>
+                                        <span className="font-semibold text-green-600">Miá»…n phÃ­</span>
                                     </div>
                                     <div className="border-t border-slate-200 pt-3">
                                         <div className="flex justify-between items-center">
-                                            <span className="text-lg font-bold text-slate-900">Tổng cộng</span>
+                                            <span className="text-lg font-bold text-slate-900">Tá»•ng cá»™ng</span>
                                             <span className="text-2xl font-bold text-emerald-600">
-                                                {total.toLocaleString()}₫
+                                                {total.toLocaleString()}â‚«
                                             </span>
                                         </div>
                                     </div>
@@ -485,12 +487,12 @@ export default function CartPage() {
                                     {isCheckingOut ? (
                                         <div className="flex items-center justify-center space-x-2">
                                             <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                                            <span>Đang xử lý...</span>
+                                            <span>Äang xá»­ lÃ½...</span>
                                         </div>
                                     ) : (
                                         <div className="flex items-center justify-center space-x-2">
                                             <CreditCard className="w-5 h-5" />
-                                            <span>Thanh toán ngay</span>
+                                            <span>Thanh toÃ¡n ngay</span>
                                         </div>
                                     )}
                                 </button>
@@ -498,15 +500,15 @@ export default function CartPage() {
 
                             {/* Features */}
                             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-                                <h3 className="text-lg font-semibold text-slate-900 mb-4">Cam kết của chúng tôi</h3>
+                                <h3 className="text-lg font-semibold text-slate-900 mb-4">Cam káº¿t cá»§a chÃºng tÃ´i</h3>
                                 <div className="space-y-3">
                                     <div className="flex items-center space-x-3">
                                         <div className="w-10 h-10 bg-emerald-100 rounded-xl flex items-center justify-center">
                                             <Truck className="w-5 h-5 text-emerald-600" />
                                         </div>
                                         <div>
-                                            <p className="font-semibold text-slate-900">Giao hàng miễn phí</p>
-                                            <p className="text-sm text-slate-600">Cho đơn hàng từ 500K</p>
+                                            <p className="font-semibold text-slate-900">Giao hÃ ng miá»…n phÃ­</p>
+                                            <p className="text-sm text-slate-600">Cho Ä‘Æ¡n hÃ ng tá»« 500K</p>
                                         </div>
                                     </div>
                                     <div className="flex items-center space-x-3">
@@ -514,8 +516,8 @@ export default function CartPage() {
                                             <Shield className="w-5 h-5 text-blue-600" />
                                         </div>
                                         <div>
-                                            <p className="font-semibold text-slate-900">Bảo hành chính hãng</p>
-                                            <p className="text-sm text-slate-600">12 tháng bảo hành</p>
+                                            <p className="font-semibold text-slate-900">Báº£o hÃ nh chÃ­nh hÃ£ng</p>
+                                            <p className="text-sm text-slate-600">12 thÃ¡ng báº£o hÃ nh</p>
                                         </div>
                                     </div>
                                     <div className="flex items-center space-x-3">
@@ -523,8 +525,8 @@ export default function CartPage() {
                                             <Gift className="w-5 h-5 text-purple-600" />
                                         </div>
                                         <div>
-                                            <p className="font-semibold text-slate-900">Đổi trả dễ dàng</p>
-                                            <p className="text-sm text-slate-600">Trong vòng 30 ngày</p>
+                                            <p className="font-semibold text-slate-900">Äá»•i tráº£ dá»… dÃ ng</p>
+                                            <p className="text-sm text-slate-600">Trong vÃ²ng 30 ngÃ y</p>
                                         </div>
                                     </div>
                                 </div>
@@ -536,3 +538,4 @@ export default function CartPage() {
         </div>
     );
 }
+

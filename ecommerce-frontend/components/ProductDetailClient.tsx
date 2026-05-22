@@ -1,4 +1,6 @@
-'use client';
+﻿'use client';
+
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE ?? 'http://localhost:5091';
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -43,13 +45,13 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
     const fetchReviews = async () => {
       setLoadingReviews(true);
       try {
-        const res = await fetch(`http://localhost:5091/api/Review/product/${product.id}?page=1&pageSize=10`);
+        const res = await fetch(`${API_BASE}/api/Review/product/${product.id}?page=1&pageSize=10`);
         if (res.ok) {
           const data = await res.json();
           setReviews(data);
         }
       } catch (error) {
-        console.error('Lỗi khi tải reviews:', error);
+        console.error('Lá»—i khi táº£i reviews:', error);
       } finally {
         setLoadingReviews(false);
       }
@@ -58,13 +60,13 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
     const fetchRating = async () => {
       setLoadingRating(true);
       try {
-        const res = await fetch(`http://localhost:5091/api/Review/product/${product.id}/rating`);
+        const res = await fetch(`${API_BASE}/api/Review/product/${product.id}/rating`);
         if (res.ok) {
           const data = await res.json();
           setRating(data.averageRating || data);
         }
       } catch (error) {
-        console.error('Lỗi khi tải rating:', error);
+        console.error('Lá»—i khi táº£i rating:', error);
       } finally {
         setLoadingRating(false);
       }
@@ -86,7 +88,7 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
     }
 
     try {
-      const res = await fetch('http://localhost:5091/api/wishlist', {
+      const res = await fetch(`${API_BASE}/api/wishlist`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -99,10 +101,10 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
         setAdded(true);
       } else {
         const err = await res.text();
-        console.error('Lỗi khi thêm wishlist:', err);
+        console.error('Lá»—i khi thÃªm wishlist:', err);
       }
     } catch (err) {
-      console.error('Lỗi kết nối:', err);
+      console.error('Lá»—i káº¿t ná»‘i:', err);
     }
   };
   const [showFullDescription, setShowFullDescription] = useState(false);
@@ -110,12 +112,12 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
     <div className="max-w-6xl mx-auto px-4 py-10 space-y-12">
       {/* Breadcrumb */}
       <nav className="text-sm text-gray-500 mb-4">
-        <Link href="/" className="hover:text-blue-600">Trang chủ</Link> &gt;{' '}
-        <Link href="/shop/categories" className="hover:text-blue-600">Danh mục</Link> &gt;{' '}
+        <Link href="/" className="hover:text-blue-600">Trang chá»§</Link> &gt;{' '}
+        <Link href="/shop/categories" className="hover:text-blue-600">Danh má»¥c</Link> &gt;{' '}
         <span className="text-gray-700 font-medium">{product.name}</span>
       </nav>
 
-      {/* Thông tin sản phẩm */}
+      {/* ThÃ´ng tin sáº£n pháº©m */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 bg-white rounded-xl shadow-2xl p-8">
       <div className="flex flex-col items-center">
         {product.imageUrls?.length > 0 ? (
@@ -125,11 +127,11 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
               alt={product.name}
               className="w-full h-80 object-cover transition-transform duration-500 group-hover:scale-110"
             />
-            {/* Nếu nhiều ảnh, thêm slider/carousel ở đây */}
+            {/* Náº¿u nhiá»u áº£nh, thÃªm slider/carousel á»Ÿ Ä‘Ã¢y */}
           </div>
         ) : (
           <div className="w-80 h-80 flex items-center justify-center bg-gray-100 rounded-xl">
-            <span className="text-gray-400">Không có ảnh</span>
+            <span className="text-gray-400">KhÃ´ng cÃ³ áº£nh</span>
           </div>
         )}
         <div className="flex gap-2 mt-4">
@@ -137,7 +139,7 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
             <img
               key={i}
               src={url}
-              alt={`Ảnh phụ ${i + 1}`}
+              alt={`áº¢nh phá»¥ ${i + 1}`}
               onClick={() => setMainImage(url)}
               className={`w-16 h-16 rounded-md object-cover border hover:border-blue-400 transition cursor-pointer ${
                 url === mainImage ? 'ring-2 ring-blue-500' : ''
@@ -161,15 +163,15 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
                 onClick={() => setShowFullDescription(!showFullDescription)}
                 className="mt-2 text-blue-600 hover:underline text-sm font-medium"
               >
-                {showFullDescription ? 'Thu gọn ▲' : 'Xem thêm ▼'}
+                {showFullDescription ? 'Thu gá»n â–²' : 'Xem thÃªm â–¼'}
               </button>
             )}
           </div>
         </div>
         <div className="flex items-center gap-4">
-          <div className="text-3xl font-bold text-red-600">{product.price.toLocaleString()} ₫</div>
+          <div className="text-3xl font-bold text-red-600">{product.price.toLocaleString()} â‚«</div>
           <span className={`px-3 py-1 rounded-full text-sm font-medium ${product.instock > 0 ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-500'}`}>
-            {product.instock > 0 ? 'Còn hàng' : 'Hết hàng'}
+            {product.instock > 0 ? 'CÃ²n hÃ ng' : 'Háº¿t hÃ ng'}
           </span>
         </div>
         <div className="flex gap-4 items-center">
@@ -177,7 +179,7 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
           <button
             onClick={handleAddToWishlist}
             className={`p-2 rounded-full border ${added ? 'bg-red-100 text-red-500' : 'hover:bg-gray-100 text-gray-400'}`}
-            aria-label={added ? 'Đã thêm vào wishlist' : 'Thêm vào wishlist'}
+            aria-label={added ? 'ÄÃ£ thÃªm vÃ o wishlist' : 'ThÃªm vÃ o wishlist'}
             disabled={added}
           >
             <Heart fill={added ? 'red' : 'none'} />
@@ -187,18 +189,18 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
     </div>
 
 
-      {/* Đánh giá sản phẩm */}
+      {/* ÄÃ¡nh giÃ¡ sáº£n pháº©m */}
       <div className="bg-white rounded-lg shadow p-6">
-        <h2 className="text-2xl font-semibold mb-4">Đánh giá sản phẩm</h2>
+        <h2 className="text-2xl font-semibold mb-4">ÄÃ¡nh giÃ¡ sáº£n pháº©m</h2>
         {loadingReviews ? (
-          <p>Đang tải đánh giá...</p>
+          <p>Äang táº£i Ä‘Ã¡nh giÃ¡...</p>
         ) : reviews.length === 0 ? (
-          <p>Chưa có đánh giá nào cho sản phẩm này.</p>
+          <p>ChÆ°a cÃ³ Ä‘Ã¡nh giÃ¡ nÃ o cho sáº£n pháº©m nÃ y.</p>
         ) : (
           <ul className="space-y-4 max-h-96 overflow-y-auto">
             {reviews.map((review) => (
               <li key={review.id} className="border-b border-gray-200 pb-4">
-                <p className="font-semibold">{review.userName || 'Người dùng'}</p>
+                <p className="font-semibold">{review.userName || 'NgÆ°á»i dÃ¹ng'}</p>
                 <StarRating rating={review.rating} />
                 <p className="text-gray-700">{review.comment}</p>
                 <p className="text-sm text-gray-400">
@@ -210,9 +212,9 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
         )}
       </div>
 
-      {/* Sản phẩm liên quan */}
+      {/* Sáº£n pháº©m liÃªn quan */}
       <div>
-        <h2 className="text-2xl font-semibold text-gray-800 mb-6">Sản phẩm liên quan</h2>
+        <h2 className="text-2xl font-semibold text-gray-800 mb-6">Sáº£n pháº©m liÃªn quan</h2>
         <div className="grid gap-6 grid-cols-2 md:grid-cols-4">
           {relatedProducts
             .filter((p) => p.id !== product.id)
@@ -234,7 +236,7 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
                 />
                 <h3 className="text-gray-800 font-medium truncate">{p.name}</h3>
                 <p className="text-red-500 text-sm font-semibold mt-1">
-                  {p.price.toLocaleString()} ₫
+                  {p.price.toLocaleString()} â‚«
                 </p>
               </Link>
             ))}
@@ -243,3 +245,4 @@ export default function ProductDetailClient({ product, relatedProducts }: { prod
     </div>
   );
 }
+

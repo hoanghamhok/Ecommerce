@@ -1,25 +1,26 @@
+﻿const API_BASE = process.env.NEXT_PUBLIC_API_BASE ?? 'http://localhost:5091';
 
 
 import axios from 'axios';
 
 const API = axios.create({
-  baseURL: "http://localhost:5091/api"
+  baseURL: `${API_BASE}/api`
 })
 
-//API lấy danh sách nhóm sản phẩm
+//API láº¥y danh sÃ¡ch nhÃ³m sáº£n pháº©m
 export const fetchCategories = () => API.get('/categories');
 
-//API tạo mới nhóm sản phẩm
+//API táº¡o má»›i nhÃ³m sáº£n pháº©m
 export const createCategory = (
   data: {name: string, description: string}) => API.post(
     '/categories', data);
 
-//API sửa nhóm sản phẩm
+//API sá»­a nhÃ³m sáº£n pháº©m
 export const updateCategory = (id: number, 
   data : {name: string, description: string}) => API.put(
     `/categories/${id}`, data);
 
-//API xóa nhóm sản phẩm
+//API xÃ³a nhÃ³m sáº£n pháº©m
 export const deleteCategory = (id: number) => API.delete(
   `/categories/${id}`);
 
@@ -29,7 +30,7 @@ export const deleteCategory = (id: number) => API.delete(
 // PRODUCT API
 export const fetchProducts = () => API.get("/products", {
   headers: {
-    'Content-Type': 'application/json',  // Đảm bảo gửi header hợp lệ
+    'Content-Type': 'application/json',  // Äáº£m báº£o gá»­i header há»£p lá»‡
   },});
 export const createProduct = (data: any) =>
 
@@ -47,13 +48,13 @@ export const uploadImage = (formData: FormData) => {
   });
 };
 
-//Xử lý đăng nhập
+//Xá»­ lÃ½ Ä‘Äƒng nháº­p
 export const login = (username: string, password: string) => {
   return API.post("/auth/login", {username, password});
 }
 
-//Xử lý giỏ hàng
-//Thêm sản phẩm vào giỏ
+//Xá»­ lÃ½ giá» hÃ ng
+//ThÃªm sáº£n pháº©m vÃ o giá»
 export const addToCart = (data: {productId: number, quantity: number}) => {
   return API.post("/cart/add", data, {
     headers: {
@@ -62,7 +63,7 @@ export const addToCart = (data: {productId: number, quantity: number}) => {
   });
 }
 
-//Lấy danh sách sản phẩm trong giỏ
+//Láº¥y danh sÃ¡ch sáº£n pháº©m trong giá»
 export const fetchCart = () => {
   return API.get("/cart/get", {
     headers: {
@@ -71,7 +72,7 @@ export const fetchCart = () => {
   });
 }
 
-//Cập nhật số lượng sản phẩm trong giỏ
+//Cáº­p nháº­t sá»‘ lÆ°á»£ng sáº£n pháº©m trong giá»
 export const updateCartItem = (productId: number, quantity: number) => {
   return API.put('/cart/update-quantity', {productId: productId, quantity}, {
     headers: {
@@ -79,7 +80,7 @@ export const updateCartItem = (productId: number, quantity: number) => {
     }
   });
 }
-//Xóa sản phẩm khỏi giỏ
+//XÃ³a sáº£n pháº©m khá»i giá»
 export const removeCartItem = (productId: number) => {
   return API.delete(`/cart/remove/${productId}`, {
     headers: {
@@ -87,7 +88,7 @@ export const removeCartItem = (productId: number) => {
     }
   });
 }
-//API người dùng
+//API ngÆ°á»i dÃ¹ng
 export const fetchUsers = () => API.get("/users", {
   headers: {
     'Content-Type': 'application/json',  
@@ -97,7 +98,7 @@ export const createUser = (data: any) =>
 
 
 
-// Lấy danh sách đơn hàng
+// Láº¥y danh sÃ¡ch Ä‘Æ¡n hÃ ng
 export const fetchOrders = () =>
   API.get("/order/admin", {
     headers: {
@@ -108,7 +109,7 @@ export const fetchOrders = () =>
 //Chatbot Advisor
   export async function fetchChatbotAnswer(question: string) {
   try {
-    const res = await fetch('http://localhost:5091/api/chatbotadvisor', {
+    const res = await fetch(`${API_BASE}/api/chatbotadvisor`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ question }),

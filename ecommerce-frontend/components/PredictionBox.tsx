@@ -1,5 +1,5 @@
-"use client";
-
+﻿'use client';
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE ?? 'http://localhost:5091';
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 
@@ -10,7 +10,7 @@ export default function PredictionRecommendation() {
   useEffect(() => {
     const fetchPrediction = async () => {
       try {
-        const res = await fetch("http://localhost:5091/api/predictionmodels", {
+        const res = await fetch(`${API_BASE}/api/predictionmodels`, {
           method: "POST",
         });
 
@@ -46,7 +46,7 @@ export default function PredictionRecommendation() {
         className="mt-6 p-4 rounded-xl bg-gradient-to-r from-orange-100 to-orange-200 shadow-md"
       >
         <p className="text-gray-600 font-medium animate-pulse">
-          🔮 Đang dự đoán...
+          ðŸ”® Äang dá»± Ä‘oÃ¡n...
         </p>
       </motion.div>
     );
@@ -55,7 +55,7 @@ export default function PredictionRecommendation() {
   if (!prediction) {
     return (
       <div className="mt-6 p-4 rounded-xl bg-gray-100 shadow-md">
-        <p className="text-gray-500">🙁 Không có gợi ý hôm nay.</p>
+        <p className="text-gray-500">ðŸ™ KhÃ´ng cÃ³ gá»£i Ã½ hÃ´m nay.</p>
       </div>
     );
   }
@@ -68,7 +68,7 @@ export default function PredictionRecommendation() {
     className="mt-6 p-6 rounded-xl bg-gradient-to-r from-orange-50 via-orange-100 to-orange-200 shadow-lg"
     >
     <h2 className="text-xl font-bold text-orange-700 mb-2 flex items-center gap-2">
-        ✨ Hôm nay có thể bạn sẽ thích các sản phẩm thuộc về:{" "}
+        âœ¨ HÃ´m nay cÃ³ thá»ƒ báº¡n sáº½ thÃ­ch cÃ¡c sáº£n pháº©m thuá»™c vá»:{" "}
         <motion.span
         initial={{ scale: 0.9 }}
         animate={{ scale: 1.05 }}
@@ -82,3 +82,5 @@ export default function PredictionRecommendation() {
 
   );
 }
+
+

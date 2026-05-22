@@ -1,5 +1,6 @@
+﻿'use client';
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE ?? 'http://localhost:5091';
 // app/components/ReviewSection.tsx
-"use client";
 import { useState } from "react";
 
 export default function ReviewSection({ productId }: { productId: number }) {
@@ -14,12 +15,12 @@ export default function ReviewSection({ productId }: { productId: number }) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!token) {
-      alert("Bạn cần đăng nhập để gửi đánh giá.");
+      alert("Báº¡n cáº§n Ä‘Äƒng nháº­p Ä‘á»ƒ gá»­i Ä‘Ã¡nh giÃ¡.");
       return;
     }
 
     setLoading(true);
-    const res = await fetch("http://localhost:5091/api/Review", {
+    const res = await fetch(`${API_BASE}/api/Review`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -34,11 +35,11 @@ export default function ReviewSection({ productId }: { productId: number }) {
       setSubmitted(true);
       setShowForm(false);
     } else {
-      alert("Gửi thất bại");
+      alert("Gá»­i tháº¥t báº¡i");
     }
   };
 
-  if (submitted) return <span className="text-green-600 text-sm">Đã đánh giá</span>;
+  if (submitted) return <span className="text-green-600 text-sm">ÄÃ£ Ä‘Ã¡nh giÃ¡</span>;
 
   return (
     <div>
@@ -47,7 +48,7 @@ export default function ReviewSection({ productId }: { productId: number }) {
           onClick={() => setShowForm(true)}
           className="bg-blue-600 text-white px-3 py-1 rounded text-sm"
         >
-          Đánh giá
+          ÄÃ¡nh giÃ¡
         </button>
       ) : (
         <form onSubmit={handleSubmit} className="space-y-1 mt-2">
@@ -68,7 +69,7 @@ export default function ReviewSection({ productId }: { productId: number }) {
             onChange={(e) => setComment(e.target.value)}
             className="border p-1 w-full text-sm"
             rows={3}
-            placeholder="Nhận xét..."
+            placeholder="Nháº­n xÃ©t..."
             required
           />
 
@@ -78,14 +79,14 @@ export default function ReviewSection({ productId }: { productId: number }) {
               className="bg-green-600 text-white px-4 py-1 rounded text-sm"
               disabled={loading}
             >
-              {loading ? "Đang gửi..." : "Gửi"}
+              {loading ? "Äang gá»­i..." : "Gá»­i"}
             </button>
             <button
               type="button"
               onClick={() => setShowForm(false)}
               className="text-sm text-gray-500 underline"
             >
-              Hủy
+              Há»§y
             </button>
           </div>
         </form>
@@ -93,3 +94,5 @@ export default function ReviewSection({ productId }: { productId: number }) {
     </div>
   );
 }
+
+

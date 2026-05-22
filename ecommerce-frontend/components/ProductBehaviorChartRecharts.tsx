@@ -1,6 +1,5 @@
+﻿'use client';
 // File: components/ProductBehaviorChartRecharts.jsx
-'use client'
-
 import { useEffect, useMemo, useState } from 'react'
 import {
   ResponsiveContainer,
@@ -70,13 +69,13 @@ export default function ProductBehaviorChartRecharts() {
   const chartData = useMemo(() => {
     return (data || []).map((d) => {
       const fullName = d.productName || ''
-      const name = fullName.length > 16 ? fullName.slice(0, 16) + '…' : fullName
+      const name = fullName.length > 16 ? fullName.slice(0, 16) + 'â€¦' : fullName
       return { fullName, name, Views: d.views, AddToCart: d.addToCartCount, Purchase: d.purchaseCount }
     })
   }, [data])
 
-  if (loading) return <div className="p-6 flex items-center text-gray-500">Đang tải báo cáo…</div>
-  if (error) return <div className="p-6 text-red-600">Lỗi: {error}</div>
+  if (loading) return <div className="p-6 flex items-center text-gray-500">Äang táº£i bÃ¡o cÃ¡oâ€¦</div>
+  if (error) return <div className="p-6 text-red-600">Lá»—i: {error}</div>
 
   return (
     <div className="space-y-8 w-full max-w-[calc(100vw-22rem)] ml-auto pr-6">
@@ -84,7 +83,7 @@ export default function ProductBehaviorChartRecharts() {
         <div className="rounded-2xl p-5 shadow-sm border border-gray-100 bg-gradient-to-br from-blue-50 to-white">
           <div className="flex items-center gap-3 mb-3">
             <div className="p-2.5 rounded-full bg-blue-100"><Eye className="text-blue-600" size={20} /></div>
-            <div className="text-sm font-medium text-gray-500 uppercase">Lượt xem cao nhất</div>
+            <div className="text-sm font-medium text-gray-500 uppercase">LÆ°á»£t xem cao nháº¥t</div>
           </div>
           <div className="text-4xl font-extrabold text-gray-800 mb-2">{topViews.max}</div>
           <ul className="text-sm text-gray-700 list-disc pl-5 space-y-1">
@@ -95,7 +94,7 @@ export default function ProductBehaviorChartRecharts() {
         <div className="rounded-2xl p-5 shadow-sm border border-gray-100 bg-gradient-to-br from-green-50 to-white">
           <div className="flex items-center gap-3 mb-3">
             <div className="p-2.5 rounded-full bg-green-100"><ShoppingCart className="text-green-600" size={20} /></div>
-            <div className="text-sm font-medium text-gray-500 uppercase">Thêm giỏ nhiều nhất</div>
+            <div className="text-sm font-medium text-gray-500 uppercase">ThÃªm giá» nhiá»u nháº¥t</div>
           </div>
           <div className="text-4xl font-extrabold text-gray-800 mb-2">{topCart.max}</div>
           <ul className="text-sm text-gray-700 list-disc pl-5 space-y-1">
@@ -106,7 +105,7 @@ export default function ProductBehaviorChartRecharts() {
         <div className="rounded-2xl p-5 shadow-sm border border-gray-100 bg-gradient-to-br from-amber-50 to-white">
           <div className="flex items-center gap-3 mb-3">
             <div className="p-2.5 rounded-full bg-amber-100"><DollarSign className="text-amber-600" size={20} /></div>
-            <div className="text-sm font-medium text-gray-500 uppercase">Mua nhiều nhất</div>
+            <div className="text-sm font-medium text-gray-500 uppercase">Mua nhiá»u nháº¥t</div>
           </div>
           <div className="text-4xl font-extrabold text-gray-800 mb-2">{topBuy.max}</div>
           <ul className="text-sm text-gray-700 list-disc pl-5 space-y-1">
@@ -117,7 +116,7 @@ export default function ProductBehaviorChartRecharts() {
         <div className="rounded-2xl p-5 shadow-sm border border-gray-100 bg-gradient-to-br from-purple-50 to-white">
           <div className="flex items-center gap-3 mb-3">
             <div className="p-2.5 rounded-full bg-purple-100"><TrendingUp className="text-purple-600" size={20} /></div>
-            <div className="text-sm font-medium text-gray-500 uppercase">Tỷ lệ View→Cart cao nhất</div>
+            <div className="text-sm font-medium text-gray-500 uppercase">Tá»· lá»‡ Viewâ†’Cart cao nháº¥t</div>
           </div>
           <div className="text-2xl font-extrabold text-gray-800 mb-2">{topViewToCart.max}%</div>
           <ul className="text-sm text-gray-700 list-disc pl-5 space-y-1">
@@ -128,7 +127,7 @@ export default function ProductBehaviorChartRecharts() {
         <div className="rounded-2xl p-5 shadow-sm border border-gray-100 bg-gradient-to-br from-rose-50 to-white">
           <div className="flex items-center gap-3 mb-3">
             <div className="p-2.5 rounded-full bg-rose-100"><Flag className="text-rose-600" size={20} /></div>
-            <div className="text-sm font-medium text-gray-500 uppercase">Tỷ lệ View→Buy cao nhất</div>
+            <div className="text-sm font-medium text-gray-500 uppercase">Tá»· lá»‡ Viewâ†’Buy cao nháº¥t</div>
           </div>
           <div className="text-2xl font-extrabold text-gray-800 mb-2">{topViewToBuy.max}%</div>
           <ul className="text-sm text-gray-700 list-disc pl-5 space-y-1">
@@ -138,9 +137,9 @@ export default function ProductBehaviorChartRecharts() {
       </div>
 
       <div className="bg-white p-6 rounded-2xl shadow-md hover:shadow-lg transition w-full overflow-x-auto">
-        <h2 className="text-xl font-bold mb-4 flex items-center gap-2">📊 Hành vi mua hàng</h2>
+        <h2 className="text-xl font-bold mb-4 flex items-center gap-2">ðŸ“Š HÃ nh vi mua hÃ ng</h2>
         {chartData.length === 0 ? (
-          <div className="text-gray-500">Chưa có dữ liệu để hiển thị.</div>
+          <div className="text-gray-500">ChÆ°a cÃ³ dá»¯ liá»‡u Ä‘á»ƒ hiá»ƒn thá»‹.</div>
         ) : (
           <div className="min-w-[800px]">
             <ResponsiveContainer width="100%" height={420}>
@@ -181,3 +180,6 @@ export default function ProductBehaviorChartRecharts() {
     </div>
   )
 }
+
+
+

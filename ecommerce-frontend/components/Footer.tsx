@@ -1,5 +1,5 @@
+﻿'use client';
 // components/Footer.tsx
-'use client';
 import Link from "next/link";
 import { useState } from "react";
 import { usePathname } from 'next/navigation';
@@ -45,17 +45,17 @@ export default function Footer() {
                 </div>
               </div>
               <p className="text-slate-600 max-w-md leading-relaxed">
-                Trải nghiệm mua sắm đỉnh cao với GoCart - nơi chất lượng và dịch vụ hoàn hảo hội tụ.
+                Tráº£i nghiá»‡m mua sáº¯m Ä‘á»‰nh cao vá»›i GoCart - nÆ¡i cháº¥t lÆ°á»£ng vÃ  dá»‹ch vá»¥ hoÃ n háº£o há»™i tá»¥.
               </p>
             </div>
 
             {/* Newsletter Subscription */}
             <div className="w-full lg:w-auto">
               <h3 className="text-xl font-semibold mb-4 text-slate-800">
-                Đăng ký nhận tin tức
+                ÄÄƒng kÃ½ nháº­n tin tá»©c
               </h3>
               <p className="text-slate-600 mb-4 text-sm">
-                Nhận thông tin khuyến mãi và sản phẩm mới nhất
+                Nháº­n thÃ´ng tin khuyáº¿n mÃ£i vÃ  sáº£n pháº©m má»›i nháº¥t
               </p>
               <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-3">
                 <div className="relative flex-1">
@@ -63,7 +63,7 @@ export default function Footer() {
                     type="email"
                     value={emailSubscription}
                     onChange={(e) => setEmailSubscription(e.target.value)}
-                    placeholder="Nhập email của bạn"
+                    placeholder="Nháº­p email cá»§a báº¡n"
                     className="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent transition-all duration-200 shadow-sm"
                     required
                   />
@@ -72,7 +72,7 @@ export default function Footer() {
                   type="submit"
                   className="px-6 py-3 bg-gradient-to-r from-emerald-500 to-blue-500 text-white font-semibold rounded-xl hover:from-emerald-600 hover:to-blue-600 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-emerald-500/25 whitespace-nowrap"
                 >
-                  {isSubscribed ? "✓ Đã đăng ký!" : "Đăng ký"}
+                  {isSubscribed ? "âœ“ ÄÃ£ Ä‘Äƒng kÃ½!" : "ÄÄƒng kÃ½"}
                 </button>
               </form>
             </div>
@@ -80,18 +80,18 @@ export default function Footer() {
 
           {/* Links Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
-            {/* Cột 1 - Về GoCart */}
+            {/* Cá»™t 1 - Vá» GoCart */}
             <div className="space-y-4">
               <h3 className="text-xl font-bold text-slate-800 mb-6 relative">
-                Về GoCart
+                Vá» GoCart
                 <div className="absolute -bottom-2 left-0 w-12 h-1 bg-gradient-to-r from-emerald-400 to-blue-400 rounded-full"></div>
               </h3>
               <ul className="space-y-3">
                 {[
-                  { href: "/about", text: "Giới thiệu", icon: "👥" },
-                  { href: "/careers", text: "Tuyển dụng", icon: "💼" },
-                  { href: "/terms", text: "Điều khoản", icon: "📋" },
-                  { href: "/privacy", text: "Chính sách bảo mật", icon: "🔒" }
+                  { href: "/about", text: "Giá»›i thiá»‡u", icon: "ðŸ‘¥" },
+                  { href: "/careers", text: "Tuyá»ƒn dá»¥ng", icon: "ðŸ’¼" },
+                  { href: "/terms", text: "Äiá»u khoáº£n", icon: "ðŸ“‹" },
+                  { href: "/privacy", text: "ChÃ­nh sÃ¡ch báº£o máº­t", icon: "ðŸ”’" }
                 ].map((item, index) => (
                   <li key={index}>
                     <Link 
@@ -110,18 +110,18 @@ export default function Footer() {
               </ul>
             </div>
 
-            {/* Cột 2 - Hỗ trợ khách hàng */}
+            {/* Cá»™t 2 - Há»— trá»£ khÃ¡ch hÃ ng */}
             <div className="space-y-4">
               <h3 className="text-xl font-bold text-slate-800 mb-6 relative">
-                Hỗ trợ khách hàng
+                Há»— trá»£ khÃ¡ch hÃ ng
                 <div className="absolute -bottom-2 left-0 w-12 h-1 bg-gradient-to-r from-emerald-400 to-blue-400 rounded-full"></div>
               </h3>
               <ul className="space-y-3">
                 {[
-                  { href: "/help", text: "Trung tâm trợ giúp", icon: "❓" },
-                  { href: "/returns", text: "Đổi trả hàng", icon: "🔄" },
-                  { href: "/shipping", text: "Chính sách vận chuyển", icon: "🚚" },
-                  { href: "/warranty", text: "Bảo hành sản phẩm", icon: "🛡️" }
+                  { href: "/help", text: "Trung tÃ¢m trá»£ giÃºp", icon: "â“" },
+                  { href: "/returns", text: "Äá»•i tráº£ hÃ ng", icon: "ðŸ”„" },
+                  { href: "/shipping", text: "ChÃ­nh sÃ¡ch váº­n chuyá»ƒn", icon: "ðŸšš" },
+                  { href: "/warranty", text: "Báº£o hÃ nh sáº£n pháº©m", icon: "ðŸ›¡ï¸" }
                 ].map((item, index) => (
                   <li key={index}>
                     <Link 
@@ -140,10 +140,10 @@ export default function Footer() {
               </ul>
             </div>
 
-            {/* Cột 3 - Thông tin liên hệ */}
+            {/* Cá»™t 3 - ThÃ´ng tin liÃªn há»‡ */}
             <div className="space-y-4">
               <h3 className="text-xl font-bold text-slate-800 mb-6 relative">
-                Liên hệ
+                LiÃªn há»‡
                 <div className="absolute -bottom-2 left-0 w-12 h-1 bg-gradient-to-r from-emerald-400 to-blue-400 rounded-full"></div>
               </h3>
               <ul className="space-y-4">
@@ -181,26 +181,26 @@ export default function Footer() {
                     </svg>
                   </div>
                   <div>
-                    <p className="text-sm text-slate-500">Địa chỉ</p>
+                    <p className="text-sm text-slate-500">Äá»‹a chá»‰</p>
                     <p className="leading-relaxed">
-                      Hải Âu 03, VinHomes OceanPark<br />
-                      Gia Lâm, Hà Nội
+                      Háº£i Ã‚u 03, VinHomes OceanPark<br />
+                      Gia LÃ¢m, HÃ  Ná»™i
                     </p>
                   </div>
                 </li>
               </ul>
             </div>
 
-            {/* Cột 4 - Mạng xã hội & App */}
+            {/* Cá»™t 4 - Máº¡ng xÃ£ há»™i & App */}
             <div className="space-y-4">
               <h3 className="text-xl font-bold text-slate-800 mb-6 relative">
-                Kết nối với chúng tôi
+                Káº¿t ná»‘i vá»›i chÃºng tÃ´i
                 <div className="absolute -bottom-2 left-0 w-12 h-1 bg-gradient-to-r from-emerald-400 to-blue-400 rounded-full"></div>
               </h3>
               
               {/* Social Media */}
               <div className="space-y-4">
-                <p className="text-slate-500 text-sm">Theo dõi chúng tôi</p>
+                <p className="text-slate-500 text-sm">Theo dÃµi chÃºng tÃ´i</p>
                 <div className="flex space-x-3">
                   {[
                     { 
@@ -248,7 +248,7 @@ export default function Footer() {
 
               {/* Mobile App Download */}
               <div className="space-y-3 pt-4">
-                <p className="text-slate-500 text-sm">Tải ứng dụng</p>
+                <p className="text-slate-500 text-sm">Táº£i á»©ng dá»¥ng</p>
                 <div className="space-y-2">
                   <Link
                     href="#"
@@ -260,7 +260,7 @@ export default function Footer() {
                       </svg>
                     </div>
                     <div className="text-sm">
-                      <p className="text-slate-500">Tải trên</p>
+                      <p className="text-slate-500">Táº£i trÃªn</p>
                       <p className="text-slate-800 font-semibold group-hover:text-emerald-500 transition-colors duration-200">App Store</p>
                     </div>
                   </Link>
@@ -278,7 +278,7 @@ export default function Footer() {
                       </svg>
                     </div>
                     <div className="text-sm">
-                      <p className="text-slate-500">Tải trên</p>
+                      <p className="text-slate-500">Táº£i trÃªn</p>
                       <p className="text-slate-800 font-semibold group-hover:text-emerald-500 transition-colors duration-200">Google Play</p>
                     </div>
                   </Link>
@@ -290,18 +290,18 @@ export default function Footer() {
           {/* Awards & Certifications */}
           <div className="border-t border-slate-200 pt-8 mb-8">
             <div className="text-center mb-6">
-              <h4 className="text-lg font-semibold text-slate-800 mb-4">Chứng nhận và Giải thưởng</h4>
+              <h4 className="text-lg font-semibold text-slate-800 mb-4">Chá»©ng nháº­n vÃ  Giáº£i thÆ°á»Ÿng</h4>
             </div>
             <div className="flex flex-wrap justify-center items-center gap-8 opacity-80">
               {[
-                { name: "ISO 9001", desc: "Chất lượng" },
-                { name: "SSL", desc: "Bảo mật" },
+                { name: "ISO 9001", desc: "Cháº¥t lÆ°á»£ng" },
+                { name: "SSL", desc: "Báº£o máº­t" },
                 { name: "Top E-commerce", desc: "2024" },
                 { name: "Customer Choice", desc: "Award" }
               ].map((cert, index) => (
                 <div key={index} className="text-center">
                   <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mb-2 mx-auto">
-                    <span className="text-2xl">🏆</span>
+                    <span className="text-2xl">ðŸ†</span>
                   </div>
                   <p className="text-xs text-slate-700">{cert.name}</p>
                   <p className="text-xs text-slate-500">{cert.desc}</p>
@@ -316,16 +316,16 @@ export default function Footer() {
           <div className="max-w-7xl mx-auto px-4 py-6">
             <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
               <div className="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-6 text-sm text-slate-500">
-                <p>&copy; 2024 GoCart. Tất cả quyền được bảo lưu.</p>
+                <p>&copy; 2024 GoCart. Táº¥t cáº£ quyá»n Ä‘Æ°á»£c báº£o lÆ°u.</p>
                 <div className="flex items-center space-x-4">
                   <Link href="/privacy" className="hover:text-emerald-500 transition-colors duration-200">
-                    Chính sách bảo mật
+                    ChÃ­nh sÃ¡ch báº£o máº­t
                   </Link>
-                  <span>•</span>
+                  <span>â€¢</span>
                   <Link href="/terms" className="hover:text-emerald-500 transition-colors duration-200">
-                    Điều khoản sử dụng
+                    Äiá»u khoáº£n sá»­ dá»¥ng
                   </Link>
-                  <span>•</span>
+                  <span>â€¢</span>
                   <Link href="/cookies" className="hover:text-emerald-500 transition-colors duration-200">
                     Cookie Policy
                   </Link>
@@ -334,7 +334,7 @@ export default function Footer() {
               
               <div className="flex items-center space-x-2 text-sm text-slate-500">
                 <span>Made with</span>
-                <span className="text-red-400 animate-pulse">❤️</span>
+                <span className="text-red-400 animate-pulse">â¤ï¸</span>
                 <span>in Vietnam</span>
               </div>
             </div>
@@ -344,3 +344,4 @@ export default function Footer() {
     </footer>
   );
 }
+

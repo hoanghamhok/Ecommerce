@@ -1,4 +1,6 @@
-'use client';
+﻿'use client';
+
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE ?? 'http://localhost:5091';
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
@@ -20,12 +22,12 @@ export default function DealsPage() {
   useEffect(() => {
     const fetchDeals = async () => {
       try {
-        const res = await fetch('http://localhost:5091/api/products');
+        const res = await fetch(`${API_BASE}/api/products`);
         const data: Product[] = await res.json();
         const discounted = data.filter(p => p.discount && p.discount > 0);
         setProducts(discounted);
       } catch (error) {
-        console.error('Lỗi khi tải sản phẩm giảm giá:', error);
+        console.error('Lá»—i khi táº£i sáº£n pháº©m giáº£m giÃ¡:', error);
       } finally {
         setLoading(false);
       }
@@ -51,9 +53,9 @@ export default function DealsPage() {
             <span className="font-semibold">FLASH SALE</span>
           </div>
           <h1 className="text-4xl md:text-5xl font-black text-slate-900 mb-3">
-            <span className="text-red-600">Ưu đãi hot hôm nay</span>
+            <span className="text-red-600">Æ¯u Ä‘Ã£i hot hÃ´m nay</span>
           </h1>
-          <p className="text-lg text-slate-600">Săn deal cực sốc - Số lượng có hạn!</p>
+          <p className="text-lg text-slate-600">SÄƒn deal cá»±c sá»‘c - Sá»‘ lÆ°á»£ng cÃ³ háº¡n!</p>
         </div>
 
         {products.length === 0 ? (
@@ -61,13 +63,13 @@ export default function DealsPage() {
             <div className="w-32 h-32 mx-auto mb-6 bg-red-100 rounded-full flex items-center justify-center">
               <Zap className="w-16 h-16 text-red-400" />
             </div>
-            <h2 className="text-2xl font-bold text-slate-900 mb-2">Hiện chưa có ưu đãi</h2>
-            <p className="text-slate-600 mb-6">Hãy quay lại sau để khám phá các deal hot!</p>
+            <h2 className="text-2xl font-bold text-slate-900 mb-2">Hiá»‡n chÆ°a cÃ³ Æ°u Ä‘Ã£i</h2>
+            <p className="text-slate-600 mb-6">HÃ£y quay láº¡i sau Ä‘á»ƒ khÃ¡m phÃ¡ cÃ¡c deal hot!</p>
             <Link
               href="/shop"
               className="inline-flex items-center bg-gradient-to-r from-red-500 to-orange-400 text-white px-8 py-3 rounded-xl font-semibold hover:from-red-600 hover:to-orange-500 transition-all duration-200"
             >
-              Xem tất cả sản phẩm
+              Xem táº¥t cáº£ sáº£n pháº©m
             </Link>
           </div>
         ) : (
@@ -103,10 +105,10 @@ export default function DealsPage() {
                     </h2>
                     <div className="flex items-baseline gap-3 mb-3">
                       <span className="text-2xl font-black text-red-600">
-                        {priceAfterDiscount.toLocaleString()}₫
+                        {priceAfterDiscount.toLocaleString()}â‚«
                       </span>
                       <span className="line-through text-slate-400">
-                        {product.price.toLocaleString()}₫
+                        {product.price.toLocaleString()}â‚«
                       </span>
                     </div>
                     <div className="mt-auto space-y-2">
@@ -114,7 +116,7 @@ export default function DealsPage() {
                         href={`/shop/product/${product.id}`}
                         className="inline-flex items-center justify-center w-full bg-gradient-to-r from-red-500 to-orange-400 text-white py-2 rounded-xl font-semibold hover:from-red-600 hover:to-orange-500 hover:scale-105 transition-all duration-200 group"
                       >
-                        Xem chi tiết
+                        Xem chi tiáº¿t
                         <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                       </Link>
                       <AddToCartButton productId={product.id} />
@@ -129,3 +131,4 @@ export default function DealsPage() {
     </div>
   );
 }
+

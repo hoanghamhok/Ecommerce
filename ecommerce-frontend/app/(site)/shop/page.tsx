@@ -1,5 +1,7 @@
-'use client';
-import { useEffect, useState } from 'react';
+﻿'use client';
+
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE ?? 'http://localhost:5091';
+import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
@@ -38,7 +40,7 @@ type Product = {
 type SortOption = 'name' | 'price-asc' | 'price-desc' | 'rating' | 'newest';
 type ViewMode = 'grid' | 'list';
 
-export default function ShopPage() {
+function ShopPageContent() {
   const [products, setProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -54,7 +56,7 @@ export default function ShopPage() {
   const router = useRouter();
   const keyword = searchParams.get('search');
 
-  const categories = ['Điện thoại', 'Laptop', 'Thời trang', 'Phụ kiện', 'Đồng hồ', 'Đồ gia dụng'];
+  const categories = ['Äiá»‡n thoáº¡i', 'Laptop', 'Thá»i trang', 'Phá»¥ kiá»‡n', 'Äá»“ng há»“', 'Äá»“ gia dá»¥ng'];
 
   useEffect(() => {
     if (keyword) {
@@ -67,8 +69,8 @@ export default function ShopPage() {
       try {
         setLoading(true);
         const apiUrl = keyword
-          ? `http://localhost:5091/api/products/search?keyword=${encodeURIComponent(keyword)}`
-          : `http://localhost:5091/api/products`;
+          ? `${API_BASE}/api/products/search?keyword=${encodeURIComponent(keyword)}`
+          : `${API_BASE}/api/products`;
 
         const res = await fetch(apiUrl);
         const data = await res.json();
@@ -87,7 +89,7 @@ export default function ShopPage() {
         setProducts(enhancedProducts);
         setFilteredProducts(enhancedProducts);
       } catch (err) {
-        console.error('Lỗi khi tải sản phẩm:', err);
+        console.error('Lá»—i khi táº£i sáº£n pháº©m:', err);
       } finally {
         setLoading(false);
       }
@@ -198,15 +200,15 @@ export default function ShopPage() {
           <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mb-6">
             <div>
               <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-3">
-                {keyword ? `Kết quả tìm kiếm` : 'Tất cả sản phẩm'}
+                {keyword ? `Káº¿t quáº£ tÃ¬m kiáº¿m` : 'Táº¥t cáº£ sáº£n pháº©m'}
               </h1>
               {keyword && (
                 <p className="text-xl text-slate-600">
-                  cho "{keyword}" - {filteredProducts.length} sản phẩm
+                  cho "{keyword}" - {filteredProducts.length} sáº£n pháº©m
                 </p>
               )}
               <p className="text-slate-500 mt-2">
-                Khám phá bộ sưu tập sản phẩm chất lượng cao của GoCart
+                KhÃ¡m phÃ¡ bá»™ sÆ°u táº­p sáº£n pháº©m cháº¥t lÆ°á»£ng cao cá»§a GoCart
               </p>
             </div>
 
@@ -218,7 +220,7 @@ export default function ShopPage() {
                   type="text"
                   value={searchInput}
                   onChange={(e) => setSearchInput(e.target.value)}
-                  placeholder="Tìm kiếm sản phẩm..."
+                  placeholder="TÃ¬m kiáº¿m sáº£n pháº©m..."
                   className="w-full pl-12 pr-4 py-3 bg-white border border-slate-300 rounded-2xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent shadow-sm"
                 />
               </form>
@@ -258,7 +260,7 @@ export default function ShopPage() {
                 className="flex items-center space-x-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors duration-200"
               >
                 <SlidersHorizontal className="w-4 h-4" />
-                <span>Bộ lọc</span>
+                <span>Bá»™ lá»c</span>
                 {(selectedCategories.length > 0 || priceRange.min > 0 || priceRange.max < 1000000000) && (
                   <span className="bg-emerald-500 text-white text-xs px-2 py-1 rounded-full">
                     {selectedCategories.length + (priceRange.min > 0 || priceRange.max < 1000000000 ? 1 : 0)}
@@ -269,7 +271,7 @@ export default function ShopPage() {
 
             <div className="flex items-center space-x-4">
               <span className="text-sm text-slate-600">
-                Hiển thị {filteredProducts.length} sản phẩm
+                Hiá»ƒn thá»‹ {filteredProducts.length} sáº£n pháº©m
               </span>
               
               {/* Sort Dropdown */}
@@ -279,11 +281,11 @@ export default function ShopPage() {
                   onChange={(e) => setSortBy(e.target.value as SortOption)}
                   className="appearance-none bg-white border border-slate-300 rounded-lg px-4 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 cursor-pointer"
                 >
-                  <option value="name">Tên A-Z</option>
-                  <option value="price-asc">Giá thấp đến cao</option>
-                  <option value="price-desc">Giá cao đến thấp</option>
-                  <option value="rating">Đánh giá cao nhất</option>
-                  <option value="newest">Mới nhất</option>
+                  <option value="name">TÃªn A-Z</option>
+                  <option value="price-asc">GiÃ¡ tháº¥p Ä‘áº¿n cao</option>
+                  <option value="price-desc">GiÃ¡ cao Ä‘áº¿n tháº¥p</option>
+                  <option value="rating">ÄÃ¡nh giÃ¡ cao nháº¥t</option>
+                  <option value="newest">Má»›i nháº¥t</option>
                 </select>
                 <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
               </div>
@@ -294,19 +296,19 @@ export default function ShopPage() {
           {showFilters && (
             <div className="mt-4 p-6 bg-white rounded-2xl shadow-sm border border-slate-200">
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-semibold text-slate-900">Bộ lọc tìm kiếm</h3>
+                <h3 className="text-lg font-semibold text-slate-900">Bá»™ lá»c tÃ¬m kiáº¿m</h3>
                 <button
                   onClick={clearFilters}
                   className="text-sm text-emerald-600 hover:text-emerald-700 font-medium"
                 >
-                  Xóa tất cả
+                  XÃ³a táº¥t cáº£
                 </button>
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Category Filter */}
                 {/* <div>
-                  <h4 className="font-medium text-slate-900 mb-3">Danh mục</h4>
+                  <h4 className="font-medium text-slate-900 mb-3">Danh má»¥c</h4>
                   <div className="space-y-2">
                     {categories.map(category => (
                       <label key={category} className="flex items-center space-x-3">
@@ -330,11 +332,11 @@ export default function ShopPage() {
 
                 {/* Price Range Filter */}
                 <div>
-                  <h4 className="font-medium text-slate-900 mb-3">Khoảng giá</h4>
+                  <h4 className="font-medium text-slate-900 mb-3">Khoáº£ng giÃ¡</h4>
                   <div className="space-y-4">
                     <div className="flex space-x-4">
                       <div>
-                        <label className="block text-sm text-slate-600 mb-1">Từ</label>
+                        <label className="block text-sm text-slate-600 mb-1">Tá»«</label>
                         <input
                           type="number"
                           value={priceRange.min}
@@ -344,7 +346,7 @@ export default function ShopPage() {
                         />
                       </div>
                       <div>
-                        <label className="block text-sm text-slate-600 mb-1">Đến</label>
+                        <label className="block text-sm text-slate-600 mb-1">Äáº¿n</label>
                         <input
                           type="number"
                           value={priceRange.max}
@@ -368,15 +370,15 @@ export default function ShopPage() {
             <div className="w-32 h-32 bg-gradient-to-r from-slate-100 to-slate-200 rounded-full flex items-center justify-center mx-auto mb-6">
               <Search className="w-16 h-16 text-slate-400" />
             </div>
-            <h2 className="text-2xl font-bold text-slate-900 mb-2">Không tìm thấy sản phẩm</h2>
+            <h2 className="text-2xl font-bold text-slate-900 mb-2">KhÃ´ng tÃ¬m tháº¥y sáº£n pháº©m</h2>
             <p className="text-slate-600 mb-8 max-w-md mx-auto">
-              Không có sản phẩm nào phù hợp với tiêu chí tìm kiếm của bạn. Hãy thử điều chỉnh bộ lọc hoặc từ khóa tìm kiếm.
+              KhÃ´ng cÃ³ sáº£n pháº©m nÃ o phÃ¹ há»£p vá»›i tiÃªu chÃ­ tÃ¬m kiáº¿m cá»§a báº¡n. HÃ£y thá»­ Ä‘iá»u chá»‰nh bá»™ lá»c hoáº·c tá»« khÃ³a tÃ¬m kiáº¿m.
             </p>
             <button
               onClick={clearFilters}
               className="bg-gradient-to-r from-emerald-500 to-blue-500 text-white px-8 py-3 rounded-xl font-semibold hover:from-emerald-600 hover:to-blue-600 transition-all duration-200"
             >
-              Xóa bộ lọc
+              XÃ³a bá»™ lá»c
             </button>
           </div>
         ) : (
@@ -411,12 +413,12 @@ export default function ShopPage() {
                     {product.isNew && (
                       <span className="bg-green-500 text-white text-xs px-2 py-1 rounded-full font-semibold flex items-center space-x-1">
                         <Zap className="w-3 h-3" />
-                        <span>MỚI</span>
+                        <span>Má»šI</span>
                       </span>
                     )}
                     {product.isBestSeller && (
                       <span className="bg-orange-500 text-white text-xs px-2 py-1 rounded-full font-semibold">
-                        BÁN CHẠY
+                        BÃN CHáº Y
                       </span>
                     )}
                     
@@ -471,7 +473,7 @@ export default function ShopPage() {
                     }`}>
                       {product.name}
                     </h3>
-                    {/* <div className="text-blue-600 font-bold text-xl mb-2">{Number(product.price).toLocaleString()} ₫</div> */}
+                    {/* <div className="text-blue-600 font-bold text-xl mb-2">{Number(product.price).toLocaleString()} â‚«</div> */}
                     <div className="flex items-center justify-between mb-4">
                       <div className="flex items-center space-x-2">
                         {product.discount && product.discount > 0 ? (
@@ -479,17 +481,17 @@ export default function ShopPage() {
                             <span className={`font-bold text-emerald-600 ${
                               viewMode === 'list' ? 'text-2xl' : 'text-xl'
                             }`}>
-                              {(product.price * (1 - product.discount / 100)).toLocaleString()}₫
+                              {(product.price * (1 - product.discount / 100)).toLocaleString()}â‚«
                             </span>
                             <span className="text-slate-400 line-through text-sm">
-                              {product.price.toLocaleString()}₫
+                              {product.price.toLocaleString()}â‚«
                             </span>
                           </>
                         ) : (
                           <span className={`font-bold text-emerald-600 ${
                             viewMode === 'list' ? 'text-2xl' : 'text-xl'
                           }`}>
-                            {product.price.toLocaleString()}₫
+                            {product.price.toLocaleString()}â‚«
                           </span>
                         )}
                       </div>
@@ -503,7 +505,7 @@ export default function ShopPage() {
                       </div>
                       <div className="flex items-center space-x-1">
                         <Shield className="w-3 h-3" />
-                        <span>Bảo hành</span>
+                        <span>Báº£o hÃ nh</span>
                       </div>
                     </div>
                   </div>
@@ -514,7 +516,7 @@ export default function ShopPage() {
                       href={`/shop/product/${product.id}`}
                       className="block w-full bg-slate-900 text-white text-center py-3 px-6 rounded-xl font-semibold hover:bg-slate-800 transition-colors duration-200 hover:shadow-lg transform hover:-translate-y-0.5"
                     >
-                      Xem chi tiết
+                      Xem chi tiáº¿t
                     </Link>
                     
                     {/* <button className={`w-full bg-emerald-500 text-white py-3 px-6 rounded-xl font-semibold hover:bg-emerald-600 transition-all duration-200 hover:shadow-lg transform hover:-translate-y-0.5 flex items-center justify-center space-x-2 ${
@@ -522,7 +524,7 @@ export default function ShopPage() {
                     }`}> */}
                       <AddToCartButton  productId={product.id}/>
                       {/* <ShoppingCart className="w-4 h-4" />
-                      <span>Thêm vào giỏ</span> */}
+                      <span>ThÃªm vÃ o giá»</span> */}
                     {/* </button> */}
                   </div>
                 </div>
@@ -535,11 +537,19 @@ export default function ShopPage() {
         {filteredProducts.length > 0 && (
           <div className="text-center mt-12">
             <button className="bg-white text-slate-700 border border-slate-300 px-8 py-3 rounded-xl font-semibold hover:bg-slate-50 hover:border-slate-400 transition-all duration-200">
-              Xem thêm sản phẩm
+              Xem thÃªm sáº£n pháº©m
             </button>
           </div>
         )}
       </div>
     </div>
+  );
+}
+
+export default function ShopPage() {
+  return (
+    <Suspense fallback={<div className="p-8">Loading shop...</div>}>
+      <ShopPageContent />
+    </Suspense>
   );
 }
